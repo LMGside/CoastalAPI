@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contour.BaseClient;
+using CoastalAPIModels.Models;
+using Newtonsoft.Json;
 
 namespace CoastalAPIClient
 {
@@ -11,6 +13,20 @@ namespace CoastalAPIClient
     {
         public CoastalClient(string username, string password, string clienturl) : base(username, password, clienturl) { }
 
+        public string InsertCustomer(RegisterRequest rr)
+        {
+            string methodname = "api/coastalAPI/InsertCustomer";
 
+            try
+            {
+                string response = PerformPostOperation(methodname, rr);
+
+                return JsonConvert.DeserializeObject<string>(response);
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }

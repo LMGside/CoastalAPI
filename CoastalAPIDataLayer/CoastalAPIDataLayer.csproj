@@ -61,10 +61,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoastalAPISettings.cs" />
+    <Compile Include="Factories\CustomerFactory.cs" />
+    <Compile Include="Factories\ErrorFactory.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\ErrorLog.cs" />
+    <Compile Include="Models\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

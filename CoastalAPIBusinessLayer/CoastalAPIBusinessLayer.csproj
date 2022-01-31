@@ -233,6 +233,10 @@
       <Project>{d665a368-ffda-4a19-97c0-1300f4661bfc}</Project>
       <Name>CoastalAPIDataLayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CoastalAPIModels\CoastalAPIModels.csproj">
+      <Project>{a942c67d-d0bc-49eb-a861-0e3e945611d0}</Project>
+      <Name>CoastalAPIModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -231,5 +231,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoastalAPIModels\CoastalAPIModels.csproj">
+      <Project>{a942c67d-d0bc-49eb-a861-0e3e945611d0}</Project>
+      <Name>CoastalAPIModels</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
