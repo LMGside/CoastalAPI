@@ -28,5 +28,37 @@ namespace CoastalAPIClient
                 throw e;
             }
         }
+
+        public string FreezeCustomer(RegisterRequest rr)
+        {
+            string methodname = "api/coastalAPI/FreezeCustomer";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, rr);
+
+                return JsonConvert.DeserializeObject<string>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public string UnfreezeCustomer(RegisterRequest rr)
+        {
+            string methodname = "api/coastalAPI/UnfreezeCustomer";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, rr);
+
+                return JsonConvert.DeserializeObject<string>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }

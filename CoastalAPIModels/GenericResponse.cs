@@ -28,6 +28,7 @@ namespace CoastalAPIModels
         public string ErrorMessage { get; set; }
         public string ExceptionMessage { get; set; }
         public string StackTrace { get; set; }
+        public string CrashedMethod { get; set; }
 
     }
 }

@@ -63,9 +63,14 @@
     <Compile Include="CoastalAPISettings.cs" />
     <Compile Include="Factories\CustomerFactory.cs" />
     <Compile Include="Factories\ErrorFactory.cs" />
+    <Compile Include="Factories\SettingsFactory.cs" />
+    <Compile Include="Factories\TransactionFactory.cs" />
+    <Compile Include="Factories\WalletFactory.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\ErrorLog.cs" />
+    <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Models\Wallet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

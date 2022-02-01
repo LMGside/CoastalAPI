@@ -46,5 +46,45 @@ namespace CoastalAPIDataLayer.Factories
 
             return hasRows;
         }
+
+        public bool FreezeCustomer(string Id_no)
+        {
+            int affected = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Customers]
+                                               SET [Blocked] = 1
+                                             WHERE [Identity_No] = @Identity_No", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Identity_No", Id_no);
+                affected = cmd.ExecuteNonQuery();
+
+                con.Close();
+            }
+
+            return affected > 0;
+        }
+
+        public bool UnfreezeCustomer(string Id_no)
+        {
+            int affected = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Customers]
+                                               SET [Blocked] = 0
+                                             WHERE [Identity_No] = @Identity_No", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Identity_No", Id_no);
+                affected = cmd.ExecuteNonQuery();
+
+                con.Close();
+            }
+
+            return affected > 0;
+        }
+
+        
     }
 }

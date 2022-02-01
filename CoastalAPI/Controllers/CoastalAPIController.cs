@@ -26,9 +26,29 @@ namespace CoastalAPI.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost, Route("InsertCustomer")]
-        public HttpResponseMessage InsertPPE([FromBody] RegisterRequest rr)
+        public HttpResponseMessage InsertCustomer([FromBody] RegisterRequest rr)
         {
-            if (this.cBL.InsertCustomer(rr.Name, rr.Surname, rr.DOB, rr.Address, rr.Identity_No, rr.Contact))
+            if (this.cBL.InsertCustomer(rr.Name, rr.Surname, rr.DOB, rr.Address, rr.Identity_No, rr.Contact).Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+
+        }
+
+        /// <summary>
+        /// Freeze the customer from using their Account
+        /// </summary>
+        /// <param name="rr">Register Request</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost, Route("FreezeCustomer")]
+        public HttpResponseMessage FreezeCustomer([FromBody] RegisterRequest rr)
+        {
+            if (this.cBL.FreezeCustomer(rr.Identity_No).Status == CoastalAPIModels.ResponseStatus.Success)
             {
                 return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
             }
