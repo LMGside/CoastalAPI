@@ -25,7 +25,14 @@ namespace CoastalAPIBusinessLayer
             this.errorLogFactory = new ErrorLogFactory(this.dbConnectionString);
         }
 
-        public bool InsertCustomer(string name, string surname, DateTime dob, string address, string id, string tele)
+        public CoastalAPIBL(string dbConnectionString)
+        {
+            this.dbConnectionString = dbConnectionString;
+            this.customerFactory = new CustomerFactory(this.dbConnectionString);
+            this.errorLogFactory = new ErrorLogFactory(this.dbConnectionString);
+        }
+
+        public RegisterResponse InsertCustomer(string name, string surname, DateTime dob, string address, string id, string tele)
         {
             RegisterResponse elc = new RegisterResponse();
             try
@@ -43,7 +50,20 @@ namespace CoastalAPIBusinessLayer
                     e.Rating = 0;
                 });
 
-                return customer.Insert();
+                if (this.customerFactory.GetCustomer(id))
+                {
+                    elc.Error.ErrorMessage = "Customer already exists";
+                    elc.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return elc;
+                }
+                else
+                {
+                    customer.Insert();
+
+                    elc.Status = CoastalAPIModels.ResponseStatus.Success;
+                    return elc;
+                }
             }
             catch (Exception e)
             {
@@ -55,7 +75,7 @@ namespace CoastalAPIBusinessLayer
 
                 elc.Status = CoastalAPIModels.ResponseStatus.Fail;
 
-                return false;
+                return elc;
             }
         }
 
