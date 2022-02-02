@@ -16,9 +16,9 @@ namespace CoastalAPIDataLayer.Models
             this.dbConnectionString = dbConnectionString;
         }
         public int ID { get; set; }
-        public string Buyer { get; set; }
-        public string Seller { get; set; }
-        public string Asset { get; set; }
+        public int Buyer { get; set; }
+        public int Seller { get; set; }
+        public int Asset { get; set; }
         public decimal Amount { get; set; }
         public bool Auto_Sale { get; set; }
         public TransactionStatus Status { get; set; }
@@ -94,9 +94,9 @@ namespace CoastalAPIDataLayer.Models
                     tra = new Transaction(this.dbConnectionString)
                     {
                         ID = Convert.ToInt32(reader["ID"] as int?),
-                        Buyer = reader["Buyer"].ToString() ?? "",
-                        Seller = reader["Seller"].ToString() ?? "",
-                        Asset = reader["Asset"].ToString() ?? "",
+                        Buyer = Convert.ToInt32(reader["Buyer"] as int?),
+                        Seller = Convert.ToInt32(reader["Seller"] as int?),
+                        Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
                         Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),

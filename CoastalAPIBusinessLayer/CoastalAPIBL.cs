@@ -8,6 +8,7 @@ using CoastalAPIDataLayer;
 using CoastalAPIDataLayer.Factories;
 using CoastalAPIModels.Models;
 using Contour.Localisation;
+using System.Diagnostics;
 
 namespace CoastalAPIBusinessLayer
 {
@@ -16,6 +17,11 @@ namespace CoastalAPIBusinessLayer
         private readonly CustomerFactory customerFactory;
         private readonly ErrorLogFactory errorLogFactory;
         private readonly WalletFactory walletFactory;
+        private readonly TransactionFactory transactionFactory;
+        private readonly ArtFactory artFactory;
+        private readonly PropertyFactory propertyFactory;
+        private readonly CarFactory carFactory;
+        private readonly AssetFactory assetFactory;
         private readonly string dbConnectionString;
         private readonly ICoastalAPISettings coastalAPISettings;
         public CoastalAPIBL(ICoastalAPISettings coastalAPISettings)
@@ -25,6 +31,11 @@ namespace CoastalAPIBusinessLayer
             this.customerFactory = new CustomerFactory(this.dbConnectionString);
             this.errorLogFactory = new ErrorLogFactory(this.dbConnectionString);
             this.walletFactory = new WalletFactory(this.dbConnectionString);
+            this.transactionFactory = new TransactionFactory(this.dbConnectionString);
+            this.artFactory = new ArtFactory(this.dbConnectionString);
+            this.propertyFactory = new PropertyFactory(this.dbConnectionString);
+            this.carFactory = new CarFactory(this.dbConnectionString);
+            this.assetFactory = new AssetFactory(this.dbConnectionString);
         }
 
         public CoastalAPIBL(string dbConnectionString)
@@ -33,6 +44,11 @@ namespace CoastalAPIBusinessLayer
             this.customerFactory = new CustomerFactory(this.dbConnectionString);
             this.errorLogFactory = new ErrorLogFactory(this.dbConnectionString);
             this.walletFactory = new WalletFactory(this.dbConnectionString);
+            this.transactionFactory = new TransactionFactory(this.dbConnectionString);
+            this.artFactory = new ArtFactory(this.dbConnectionString);
+            this.propertyFactory = new PropertyFactory(this.dbConnectionString);
+            this.carFactory = new CarFactory(this.dbConnectionString);
+            this.assetFactory = new AssetFactory(this.dbConnectionString);
         }
 
         public RegisterResponse InsertCustomer(string name, string surname, DateTime dob, string address, string id, string tele)
@@ -73,10 +89,10 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Inserting Customer", "InsertCustomer in BL");
 
                 elc.Error.ErrorMessage = "Error Inserting new Customer";
-                elc.Error.ExceptionMessage = e.InnerException.Message;
                 elc.Error.StackTrace = e.StackTrace;
+                elc.Error.CrashedMethod = "InsertCustomer in BL";
 
-                elc.Status = CoastalAPIModels.ResponseStatus.Fail;
+                elc.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return elc;
             }
@@ -106,11 +122,10 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Inserting Customer", "FreezeCustomer in BL");
 
                 fcr.Error.ErrorMessage = "Error Inserting new Customer";
-                fcr.Error.ExceptionMessage = e.InnerException.Message;
                 fcr.Error.StackTrace = e.StackTrace;
                 fcr.Error.CrashedMethod = "FreezeCustomer in  BL";
 
-                fcr.Status = CoastalAPIModels.ResponseStatus.Fail;
+                fcr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return fcr;
             }
@@ -140,11 +155,10 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Unfreezing Customer", "UnfreezeCustomer in BL");
 
                 ufcr.Error.ErrorMessage = "Error Unfreezing Customer";
-                ufcr.Error.ExceptionMessage = e.InnerException.Message;
                 ufcr.Error.StackTrace = e.StackTrace;
                 ufcr.Error.CrashedMethod = "UnfreezeCustomer in  BL";
 
-                ufcr.Status = CoastalAPIModels.ResponseStatus.Fail;
+                ufcr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return ufcr;
             }
@@ -180,11 +194,10 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Deleting Customer", "DeregisterCustomer in BL");
 
                 dcr.Error.ErrorMessage = "Error Deleting Customer";
-                dcr.Error.ExceptionMessage = e.InnerException.Message;
                 dcr.Error.StackTrace = e.StackTrace;
                 dcr.Error.CrashedMethod = "DeregisterCustomer in  BL";
 
-                dcr.Status = CoastalAPIModels.ResponseStatus.Fail;
+                dcr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return dcr;
             }
@@ -230,7 +243,6 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Depositing Funds", "DepositFunds in BL");
 
                 dfr.Error.ErrorMessage = "Error Depositing Funds";
-                dfr.Error.ExceptionMessage = e.InnerException.Message;
                 dfr.Error.StackTrace = e.StackTrace;
                 dfr.Error.CrashedMethod = "DepositFunds in  BL";
 
@@ -299,7 +311,6 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Withdrawing Funds", "WithdrawFunds in BL");
 
                 wr.Error.ErrorMessage = "Error Withdrawing Funds";
-                wr.Error.ExceptionMessage = e.InnerException.Message;
                 wr.Error.StackTrace = e.StackTrace;
                 wr.Error.CrashedMethod = "WithdrawFunds in BL";
 
@@ -309,7 +320,101 @@ namespace CoastalAPIBusinessLayer
             }
         }
 
-        public 
+        public BuyAssetResponse BuyAsset(int asset_Id, string buyer_Id, decimal purchasePrice)
+        {
+            BuyAssetResponse bar = new BuyAssetResponse();
+            try
+            {
+                Customer customer = new Customer(this.dbConnectionString);
+                Wallet wallet = new Wallet(this.dbConnectionString);
+                Customer newCus = customer.Get(buyer_Id);
+                Settings settings = new Settings(this.dbConnectionString).Get();
+                Asset asset = new Asset(this.dbConnectionString).Get(asset_Id);
+
+                decimal balance = wallet.Get(newCus.ID).Balance;
+
+                if (newCus.Blocked)
+                {
+                    bar.Error.ErrorMessage = "Account Blocked";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if (purchasePrice > balance)
+                {
+                    bar.Error.ErrorMessage = "Insufficient Balance to make the purchase";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if(asset.Owner == newCus.ID)
+                {
+                    bar.Error.ErrorMessage = "Asset Already Owned By "+ newCus.Name;
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if(this.transactionFactory.MaxTransactionsCheck() >= settings.SalesToday)
+                {
+                    bar.Error.ErrorMessage = "Maximized Sales for the Day";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if(this.transactionFactory.MaxTransactionsBuyerCheck(newCus.ID) >= settings.UniqueSalesToday)
+                {
+                    bar.Error.ErrorMessage = "Customer has Maximized Sales for the Day";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if (!asset.Auto_Sale && asset.Owner != 1)
+                {
+                    bar.Error.ErrorMessage = "Asset Not for Sale by Customer";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }else if(asset.Normal_Valuation > purchasePrice)
+                {
+                    bar.Error.ErrorMessage = "Normal Valuation not met";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
+                else if(purchasePrice >= asset.Auto_Valuation)
+                {
+                    Transaction newTrans = this.transactionFactory.Create(e =>
+                    {
+                        e.Buyer = newCus.ID;
+                        e.Seller = asset.Owner;
+                    });
+                }
+
+                Debug.WriteLine("Transaction will be Posted");
+                return bar;
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Withdrawing Funds", "WithdrawFunds in BL");
+
+                bar.Error.ErrorMessage = "Error Withdrawing Funds";
+                bar.Error.StackTrace = e.StackTrace;
+                bar.Error.CrashedMethod = "WithdrawFunds in BL";
+
+                bar.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return bar;
+            }
+
+
+        }
         public void BuildAndInsertErrorLog(Exception exception, string errorMessage, string method)
         {
             var errorLog = this.errorLogFactory.Create(e =>
@@ -322,6 +427,22 @@ namespace CoastalAPIBusinessLayer
             });
 
             errorLog.Insert();
+        }
+
+        public PropertyFactory PropertyFactory
+        {
+            get { return this.propertyFactory; }
+            private set { }
+        }
+        public ArtFactory ArtFactory
+        {
+            get { return this.artFactory; }
+            private set { }
+        }
+        public CarFactory CarFactory
+        {
+            get { return this.carFactory; }
+            private set { }
         }
     }
 }

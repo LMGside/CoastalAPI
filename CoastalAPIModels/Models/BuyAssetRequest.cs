@@ -6,5 +6,8 @@ namespace CoastalAPIModels.Models
 {
     public class BuyAssetRequest
     {
+        public int Asset_ID { get; set; }
+        public int Buyer_ID { get; set; }
+        public decimal Purchase_Price { get; set; }
     }
 }
