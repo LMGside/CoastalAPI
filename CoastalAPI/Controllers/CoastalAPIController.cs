@@ -46,9 +46,38 @@ namespace CoastalAPI.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost, Route("FreezeCustomer")]
-        public HttpResponseMessage FreezeCustomer([FromBody] RegisterRequest rr)
+        public HttpResponseMessage FreezeCustomer([FromBody] FreezeCustomerRequest rr)
         {
             if (this.cBL.FreezeCustomer(rr.Identity_No).Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("UnfreezeCustomer")]
+        public HttpResponseMessage UnfreezeCustomer([FromBody] UnfreezeCustomerRequest rr)
+        {
+            if (this.cBL.UnfreezeCustomer(rr.Identity_No).Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+        }
+
+        [Authorize]
+        [HttpPost, Route("Deregister")]
+        public HttpResponseMessage DeregisterCustomer([FromBody] DeregisterCustomerRequest rr)
+        {
+            if (this.cBL.DeregisterCustomer(rr.Identity_No).Status == CoastalAPIModels.ResponseStatus.Success)
             {
                 return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
             }

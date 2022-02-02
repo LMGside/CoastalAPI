@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoastalAPIModels.Models
 {
-    class WithdrawRequest
+    public class WithdrawRequest
     {
     }
 }
