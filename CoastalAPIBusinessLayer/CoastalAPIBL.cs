@@ -248,12 +248,48 @@ namespace CoastalAPIBusinessLayer
                 Customer customer = new Customer(this.dbConnectionString);
                 Wallet wallet = new Wallet(this.dbConnectionString);
                 Customer newCus = customer.Get(id);
-                decimal balance = wallet.Get(newCus.ID).Balance;
-                if(amount > balance)
+                Settings settings = new Settings(this.dbConnectionString);
+                decimal maxWithdrawal = settings.Get().MaxWithdrawal;
+                if (newCus == null)
                 {
                     wr.Error.ErrorMessage = "Customer not Found";
-                    wr.Error.CrashedMethod = "DepositFunds";
+                    wr.Error.CrashedMethod = "WithdrawFunds";
                     wr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return wr;
+
+                }
+
+                decimal balance = wallet.Get(newCus.ID).Balance;
+
+                if (newCus.Blocked)
+                {
+                    wr.Error.ErrorMessage = "Can't Access Blocked Account";
+                    wr.Error.CrashedMethod = "WithdrawFunds";
+                    wr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return wr;
+                }
+                else if(amount > maxWithdrawal)
+                {
+                    wr.Error.ErrorMessage = "Surpassed the number of Customer Withdrawals";
+                    wr.Error.CrashedMethod = "WithdrawFunds";
+                    wr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return wr;
+                }
+                else if(amount > balance)
+                {
+                    wr.Error.ErrorMessage = "Insufficient Balance to Withdraw funds";
+                    wr.Error.CrashedMethod = "WithdrawFunds";
+                    wr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return wr;
+                }
+                else
+                {
+                    this.walletFactory.WithdrawDeposit(newCus.ID, amount);
+                    wr.Status = CoastalAPIModels.ResponseStatus.Success;
 
                     return wr;
                 }
@@ -262,16 +298,18 @@ namespace CoastalAPIBusinessLayer
             {
                 BuildAndInsertErrorLog(e, "Error Withdrawing Funds", "WithdrawFunds in BL");
 
-                wr.Error.ErrorMessage = "Error Unfreezing Customer";
+                wr.Error.ErrorMessage = "Error Withdrawing Funds";
                 wr.Error.ExceptionMessage = e.InnerException.Message;
                 wr.Error.StackTrace = e.StackTrace;
-                wr.Error.CrashedMethod = "UnfreezeCustomer in  BL";
+                wr.Error.CrashedMethod = "WithdrawFunds in BL";
 
                 wr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return wr;
             }
-        } 
+        }
+
+        public 
         public void BuildAndInsertErrorLog(Exception exception, string errorMessage, string method)
         {
             var errorLog = this.errorLogFactory.Create(e =>

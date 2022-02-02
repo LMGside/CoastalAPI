@@ -66,8 +66,12 @@
     <Compile Include="Factories\SettingsFactory.cs" />
     <Compile Include="Factories\TransactionFactory.cs" />
     <Compile Include="Factories\WalletFactory.cs" />
+    <Compile Include="Models\Art.cs" />
+    <Compile Include="Models\Asset.cs" />
+    <Compile Include="Models\Car.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\ErrorLog.cs" />
+    <Compile Include="Models\Property.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\Wallet.cs" />

@@ -63,5 +63,22 @@ namespace CoastalAPIDataLayer.Models
             }
             return affectedRows > 0;
         }
+
+        public bool Update(int id)
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"DELETE [dbo].[Wallet]
+                                         WHERE [ID] = @ID", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@ID", id);
+
+                affectedRows = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            return affectedRows > 0;
+        }
     }
 }
