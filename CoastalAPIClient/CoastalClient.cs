@@ -29,7 +29,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string FreezeCustomer(FreezeCustomerRequest rr)
+        public FreezeCustomerResponse FreezeCustomer(FreezeCustomerRequest rr)
         {
             string methodname = "api/coastalAPI/FreezeCustomer";
 
@@ -37,7 +37,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, rr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<FreezeCustomerResponse>(response);
             }
             catch (Exception e)
             {
@@ -45,7 +45,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string UnfreezeCustomer(UnfreezeCustomerRequest ucr)
+        public UnfreezeCustomerResponse UnfreezeCustomer(UnfreezeCustomerRequest ucr)
         {
             string methodname = "api/coastalAPI/UnfreezeCustomer";
 
@@ -53,7 +53,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, ucr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<UnfreezeCustomerResponse>(response);
             }
             catch (Exception e)
             {
@@ -77,7 +77,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string DepositFunds(DepositFundsRequest dfr)
+        public DepositFundsResponse DepositFunds(DepositFundsRequest dfr)
         {
             string methodname = "api/coastalAPI/Deposit";
 
@@ -85,7 +85,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, dfr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<DepositFundsResponse>(response);
             }
             catch (Exception e)
             {
@@ -93,7 +93,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string WithdrawFunds(WithdrawRequest wr)
+        public WithdrawResponse WithdrawFunds(WithdrawRequest wr)
         {
             string methodname = "api/coastalAPI/Withdraw";
 
@@ -101,7 +101,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, wr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<WithdrawResponse>(response);
             }
             catch (Exception e)
             {
@@ -109,7 +109,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string BuyAssets(BuyAssetRequest bar)
+        public BuyAssetResponse BuyAssets(BuyAssetRequest bar)
         {
             string methodname = "api/coastalAPI/BuyAsset";
 
@@ -117,7 +117,23 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, bar);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<BuyAssetResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public ReviewTransactionResponse ReviewTransaction(ReviewTransactionRequest rtr)
+        {
+            string methodname = "api/coastalAPI/Review";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, rtr);
+
+                return JsonConvert.DeserializeObject<ReviewTransactionResponse>(response);
             }
             catch (Exception e)
             {
@@ -166,6 +182,22 @@ namespace CoastalAPIClient
                 string response = PerformPostOperation(methodname, drtr);
 
                 return JsonConvert.DeserializeObject<DateRangeTransactionsResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public UserTransactionResponse SuccessfulTransactions(UserTransactionRequest user)
+        {
+            string methodname = "api/coastalAPI/SuccessfulTransactions";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, user);
+
+                return JsonConvert.DeserializeObject<UserTransactionResponse>(response);
             }
             catch (Exception e)
             {

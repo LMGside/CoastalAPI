@@ -6,6 +6,6 @@ namespace CoastalAPIModels.Models
 {
     public class WithdrawResponse : GenericResponse
     {
-
+        public string Message { get; set; }
     }
 }

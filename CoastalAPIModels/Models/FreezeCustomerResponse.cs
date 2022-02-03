@@ -6,6 +6,6 @@ namespace CoastalAPIModels.Models
 {
     public class FreezeCustomerResponse : GenericResponse
     {
-
+        public string Message { get; set; }
     }
 }

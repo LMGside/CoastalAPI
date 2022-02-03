@@ -6,6 +6,6 @@ namespace CoastalAPIModels.Models
 {
     public class RegisterResponse : GenericResponse
     {
-
+        public string Message { get; set; }
     }
 }

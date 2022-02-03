@@ -7,5 +7,6 @@ namespace CoastalAPIModels.Models
     public class DepositFundsResponse : GenericResponse
     {
         public decimal Total { get; set; }
+        public string Message { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace CoastalAPIModels.Models
 {
     public class UnfreezeCustomerResponse : GenericResponse
     {
+        public string Message { get; set; }
     }
 }

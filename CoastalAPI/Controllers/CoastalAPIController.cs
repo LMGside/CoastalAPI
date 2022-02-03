@@ -90,6 +90,67 @@ namespace CoastalAPI.Controllers
         }
 
         [Authorize]
+        [HttpPost, Route("Deposit")]
+        public HttpResponseMessage DepositFunds([FromBody] DepositFundsRequest dfr)
+        {
+            DepositFundsResponse response = this.cBL.DepositFunds(dfr.Id_No, dfr.FundAmount);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("Withdraw")]
+        public HttpResponseMessage WithdrawFunds([FromBody] WithdrawRequest wr)
+        {
+            WithdrawResponse response = this.cBL.WithdrawFunds(wr.Id_No, wr.FundAmount);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+        }
+
+        [Authorize]
+        [HttpPost, Route("BuyAsset")]
+        public HttpResponseMessage BuyAsset([FromBody] BuyAssetRequest bar)
+        {
+            BuyAssetResponse response = this.cBL.BuyAsset(bar.Asset_ID, bar.Buyer_ID, bar.Purchase_Price);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+        }
+
+        [Authorize]
+        [HttpPost, Route("Review")]
+        public HttpResponseMessage BuyAsset([FromBody] ReviewTransactionRequest rtr)
+        {
+            ReviewTransactionResponse response = this.cBL.AppproveTransaction(rtr.TransactionID, rtr.Decision);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+        }
+
+        [Authorize]
         [HttpPost, Route("TodayTransactions")]
         public HttpResponseMessage TodayTransactions([FromBody] DayTransactionRequest dtr)
         {

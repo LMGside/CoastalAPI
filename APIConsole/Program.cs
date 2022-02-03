@@ -25,14 +25,14 @@ namespace APIConsole
                 Console.WriteLine("1. Register a new Customer"); //
                 Console.WriteLine("2. Freeze Customer's Account"); //
                 Console.WriteLine("3. Unfreeze Customer's Account"); //
-                Console.WriteLine("4. Deregister a Customer");
-                Console.WriteLine("5. Deposit to a Customer's Wallet");
-                Console.WriteLine("6. Withdraw from a Customer's Wallet");
+                Console.WriteLine("4. Deregister a Customer"); //
+                Console.WriteLine("5. Deposit to a Customer's Wallet"); //
+                Console.WriteLine("6. Withdraw from a Customer's Wallet"); //
                 Console.WriteLine("7. View Transactions made on a Date"); //
                 Console.WriteLine("8. View Transactions made by User"); //
                 Console.WriteLine("9. View Transactions made between 2 Dates"); //
-                Console.WriteLine("10. Buy an Asset");
-                Console.WriteLine("11. Approve/Reject an Asset");
+                Console.WriteLine("10. Buy an Asset"); //
+                Console.WriteLine("11. Approve/Reject an Asset"); //
                 Console.WriteLine("12. View Successful Transactions");
                 Console.WriteLine("13. View Unsuccessful Transactions");
                 Console.WriteLine("");
@@ -110,9 +110,35 @@ namespace APIConsole
                         break;
 
                     case 5:
+                        Console.WriteLine("Enter Customer's ID Number");
+                        Console.Write("ID Number: ");
+                        string idNum5 = Console.ReadLine();
+
+                        Console.Write("Deposit Amount: ");
+                        decimal amount = Convert.ToDecimal(Console.ReadLine());
+
+                        DepositFundsRequest dfr = new DepositFundsRequest();
+                        dfr.FundAmount = amount;
+                        dfr.Id_No = idNum5;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.DepositFunds(dfr).Status);
                         break;
 
                     case 6:
+                        Console.WriteLine("Enter Customer's ID Number");
+                        Console.Write("ID Number: ");
+                        string idNum6 = Console.ReadLine();
+
+                        Console.Write("Deposit Amount: ");
+                        decimal amount2 = Convert.ToDecimal(Console.ReadLine());
+
+                        WithdrawRequest wr = new WithdrawRequest();
+                        wr.FundAmount = amount2;
+                        wr.Id_No = idNum6;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.WithdrawFunds(wr).Message);
                         break;
 
                     case 7:
@@ -193,9 +219,57 @@ namespace APIConsole
                         break;
 
                     case 10:
+                        Console.WriteLine("Enter Customer's ID Number");
+                        Console.Write("ID Number: ");
+                        string idNum7 = Console.ReadLine();
+
+                        Console.Write("Enter Asset ID: ");
+                        int assetID = Convert.ToInt32(Console.ReadLine());
+
+                        Console.Write("Purchase Amount: ");
+                        decimal amount3 = Convert.ToDecimal(Console.ReadLine());
+
+                        BuyAssetRequest buyer = new BuyAssetRequest();
+                        buyer.Buyer_ID = idNum7;
+                        buyer.Purchase_Price = amount3;
+                        buyer.Asset_ID = assetID;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.BuyAssets(buyer).Message);
                         break;
 
                     case 11:
+                        Console.Write("Enter Transaction ID:");
+                        int transID = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("1. Approve");
+                        Console.WriteLine("2. Reject");
+                        int dec = Convert.ToInt32(Console.ReadLine());
+                        ReviewTransactionRequest.TransactionStatus status;
+
+                        if (dec == 1)
+                        {
+                            status = ReviewTransactionRequest.TransactionStatus.Approved;
+                        }
+                        else
+                        {
+                            status = ReviewTransactionRequest.TransactionStatus.Rejected;
+                        }
+
+                        ReviewTransactionRequest review = new ReviewTransactionRequest();
+                        review.Decision = status;
+                        review.TransactionID = transID;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.ReviewTransaction(review).Message);
+                        break;
+
+                    case 12:
+
+                        
+                        break;
+
+                    case 13:
                         break;
                 }
 

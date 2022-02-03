@@ -75,6 +75,7 @@ namespace CoastalAPIBusinessLayer
                 if (this.customerFactory.GetCustomer(id))
                 {
                     elc.Error.ErrorMessage = "Customer already exists";
+                    elc.Message = "Customer already exists";
                     elc.Status = CoastalAPIModels.ResponseStatus.Fail;
 
                     return elc;
@@ -84,6 +85,7 @@ namespace CoastalAPIBusinessLayer
                     customer.Insert();
 
                     elc.Status = CoastalAPIModels.ResponseStatus.Success;
+                    elc.Message = "Successfully Added";
                     return elc;
                 }
             }
@@ -92,6 +94,7 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Inserting Customer", "InsertCustomer in BL");
 
                 elc.Error.ErrorMessage = "Error Inserting new Customer";
+                elc.Message = "Error Inserting new Customer";
                 elc.Error.StackTrace = e.StackTrace;
                 elc.Error.CrashedMethod = "InsertCustomer in BL";
 
@@ -110,11 +113,13 @@ namespace CoastalAPIBusinessLayer
                 if (this.customerFactory.FreezeCustomer(id))
                 {
                     fcr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    fcr.Message = "Successfully Froze Account";
                     return fcr;
                 }
                 else
                 {
                     fcr.Error.ErrorMessage = "Customer not found";
+                    fcr.Message = "Customer not found";
                     fcr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
                     return fcr;
@@ -125,6 +130,7 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Inserting Customer", "FreezeCustomer in BL");
 
                 fcr.Error.ErrorMessage = "Error Inserting new Customer";
+                fcr.Message = "Error Inserting new Customer";
                 fcr.Error.StackTrace = e.StackTrace;
                 fcr.Error.CrashedMethod = "FreezeCustomer in  BL";
 
@@ -218,6 +224,7 @@ namespace CoastalAPIBusinessLayer
                 if (newCus == null)
                 {
                     dfr.Error.ErrorMessage = "Customer not Found";
+                    dfr.Message = "Customer not Found";
                     dfr.Error.CrashedMethod = "DepositFunds";
                     dfr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -226,6 +233,7 @@ namespace CoastalAPIBusinessLayer
                 else if (newCus.Blocked)
                 {
                     dfr.Error.ErrorMessage = "Can't Access Blocked Account";
+                    dfr.Message = "Can't Access Blocked Account";
                     dfr.Error.CrashedMethod = "DepositFunds";
                     dfr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -236,6 +244,7 @@ namespace CoastalAPIBusinessLayer
                     if(this.walletFactory.AddDeposit(newCus.ID, amount))
                     {
                         dfr.Status = CoastalAPIModels.ResponseStatus.Success;
+                        dfr.Message = "Successfully Deposited";
                     }
 
                     return dfr;
@@ -246,6 +255,7 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Depositing Funds", "DepositFunds in BL");
 
                 dfr.Error.ErrorMessage = "Error Depositing Funds";
+                dfr.Message = "Error Depositing Funds";
                 dfr.Error.StackTrace = e.StackTrace;
                 dfr.Error.CrashedMethod = "DepositFunds in  BL";
 
@@ -268,6 +278,7 @@ namespace CoastalAPIBusinessLayer
                 if (newCus == null)
                 {
                     wr.Error.ErrorMessage = "Customer not Found";
+                    wr.Message = "Customer not Found";
                     wr.Error.CrashedMethod = "WithdrawFunds";
                     wr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -280,6 +291,7 @@ namespace CoastalAPIBusinessLayer
                 if (newCus.Blocked)
                 {
                     wr.Error.ErrorMessage = "Can't Access Blocked Account";
+                    wr.Message = "Can't Access Blocked Account";
                     wr.Error.CrashedMethod = "WithdrawFunds";
                     wr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -288,6 +300,7 @@ namespace CoastalAPIBusinessLayer
                 else if(amount > maxWithdrawal)
                 {
                     wr.Error.ErrorMessage = "Surpassed the number of Customer Withdrawals";
+                    wr.Message = "Surpassed the number of Customer Withdrawals";
                     wr.Error.CrashedMethod = "WithdrawFunds";
                     wr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -296,6 +309,7 @@ namespace CoastalAPIBusinessLayer
                 else if(amount > balance)
                 {
                     wr.Error.ErrorMessage = "Insufficient Balance to Withdraw funds";
+                    wr.Message = "Insufficient Balance to Withdraw funds";
                     wr.Error.CrashedMethod = "WithdrawFunds";
                     wr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -305,6 +319,7 @@ namespace CoastalAPIBusinessLayer
                 {
                     this.walletFactory.WithdrawDeposit(newCus.ID, amount);
                     wr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    wr.Message = "Successful Withdraw";
 
                     return wr;
                 }
@@ -314,6 +329,7 @@ namespace CoastalAPIBusinessLayer
                 BuildAndInsertErrorLog(e, "Error Withdrawing Funds", "WithdrawFunds in BL");
 
                 wr.Error.ErrorMessage = "Error Withdrawing Funds";
+                wr.Message = "Error Withdrawing Funds";
                 wr.Error.StackTrace = e.StackTrace;
                 wr.Error.CrashedMethod = "WithdrawFunds in BL";
 
@@ -437,7 +453,7 @@ namespace CoastalAPIBusinessLayer
                         e.Asset = asset.ID;
                         e.Amount = endCost;
                         e.Auto_Sale = true;
-                        e.Status = Transaction.TransactionStatus.Success;
+                        e.Status = Transaction.TransactionStatus.Approved;
                         e.Date_Transaction_Requested = DateTime.Now;
                         e.Date_Transaction_Approved = DateTime.Now;
                         e.Who_Approved = "Auto";
@@ -624,6 +640,7 @@ namespace CoastalAPIBusinessLayer
             try
             {
                 dtr.Transactions = this.transactionFactory.GetDayTransactions(day);
+                dtr.Status = CoastalAPIModels.ResponseStatus.Success;
 
                 return dtr;
             }catch(Exception e)
@@ -647,6 +664,7 @@ namespace CoastalAPIBusinessLayer
             {
                 Customer getCus = new Customer(this.dbConnectionString).Get(id);
                 utr.Transactions = this.transactionFactory.GetUsersTransactions(getCus.ID);
+                utr.Status = CoastalAPIModels.ResponseStatus.Success;
 
                 return utr;
             }
@@ -670,6 +688,7 @@ namespace CoastalAPIBusinessLayer
             try
             {
                 drtr.Transactions = this.transactionFactory.GetDateRangeTransactions(startD, endD);
+                drtr.Status = CoastalAPIModels.ResponseStatus.Success;
 
                 return drtr;
             }
