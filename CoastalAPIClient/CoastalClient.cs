@@ -13,7 +13,7 @@ namespace CoastalAPIClient
     {
         public CoastalClient(string username, string password, string clienturl) : base(username, password, clienturl) { }
 
-        public string InsertCustomer(RegisterRequest rr)
+        public RegisterResponse InsertCustomer(RegisterRequest rr)
         {
             string methodname = "api/coastalAPI/InsertCustomer";
 
@@ -21,7 +21,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, rr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<RegisterResponse>(response);
             }
             catch(Exception e)
             {
@@ -118,6 +118,54 @@ namespace CoastalAPIClient
                 string response = PerformPostOperation(methodname, bar);
 
                 return JsonConvert.DeserializeObject<string>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public DayTransactionResponse DayTransactions(DayTransactionRequest dtr)
+        {
+            string methodname = "api/coastalAPI/TodayTransactions";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, dtr);
+
+                return JsonConvert.DeserializeObject<DayTransactionResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public UserTransactionResponse UserTransactions(UserTransactionRequest utr)
+        {
+            string methodname = "api/coastalAPI/UserTransactions";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, utr);
+
+                return JsonConvert.DeserializeObject<UserTransactionResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public DateRangeTransactionsResponse DateRangeTransactions(DateRangeTransactionsRequest drtr)
+        {
+            string methodname = "api/coastalAPI/DateRangeTransactions";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, drtr);
+
+                return JsonConvert.DeserializeObject<DateRangeTransactionsResponse>(response);
             }
             catch (Exception e)
             {

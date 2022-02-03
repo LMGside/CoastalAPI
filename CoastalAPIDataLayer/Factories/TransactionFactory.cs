@@ -71,7 +71,7 @@ namespace CoastalAPIDataLayer.Factories
             return transactionList;
         }
 
-        public List<Transaction> GetUsersTransactions(string buyer)
+        public List<Transaction> GetUsersTransactions(int buyer)
         {
             Transaction tra = null;
             List<Transaction> transactionList = new List<Transaction>();

@@ -618,6 +618,75 @@ namespace CoastalAPIBusinessLayer
             }
         }
 
+        public DayTransactionResponse ViewDayTransactions (DateTime day)
+        {
+            DayTransactionResponse dtr = new DayTransactionResponse();
+            try
+            {
+                dtr.Transactions = this.transactionFactory.GetDayTransactions(day);
+
+                return dtr;
+            }catch(Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Getting Day Transaction", "ViewDayTransaction in BL");
+
+                dtr.Error.ErrorMessage = "Error Getting Day Transaction";
+                dtr.Error.StackTrace = e.StackTrace;
+                dtr.Error.CrashedMethod = "ViewDayTransaction in BL";
+
+                dtr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return dtr;
+            }
+        }
+
+        public UserTransactionResponse ViewUsersTransactions(string id)
+        {
+            UserTransactionResponse utr = new UserTransactionResponse();
+            try
+            {
+                Customer getCus = new Customer(this.dbConnectionString).Get(id);
+                utr.Transactions = this.transactionFactory.GetUsersTransactions(getCus.ID);
+
+                return utr;
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Getting User Transaction", "ViewUsersTransaction in BL");
+
+                utr.Error.ErrorMessage = "Error Getting User Transaction";
+                utr.Error.StackTrace = e.StackTrace;
+                utr.Error.CrashedMethod = "ViewUserTransaction in BL";
+
+                utr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return utr;
+            }
+        }
+
+        public DateRangeTransactionsResponse ViewDateRangeTransactions(DateTime startD, DateTime endD)
+        {
+            DateRangeTransactionsResponse drtr = new DateRangeTransactionsResponse();
+            try
+            {
+                drtr.Transactions = this.transactionFactory.GetDateRangeTransactions(startD, endD);
+
+                return drtr;
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Getting Date Range Transaction", "ViewDateRangeTransaction in BL");
+
+                drtr.Error.ErrorMessage = "Error Getting Date Range Transaction";
+                drtr.Error.StackTrace = e.StackTrace;
+                drtr.Error.CrashedMethod = "ViewDateRangeTransaction in BL";
+
+                drtr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return drtr;
+            }
+        }
+
         public void BuildAndInsertErrorLog(Exception exception, string errorMessage, string method)
         {
             var errorLog = this.errorLogFactory.Create(e =>

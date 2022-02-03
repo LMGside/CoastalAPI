@@ -28,13 +28,14 @@ namespace CoastalAPI.Controllers
         [HttpPost, Route("InsertCustomer")]
         public HttpResponseMessage InsertCustomer([FromBody] RegisterRequest rr)
         {
-            if (this.cBL.InsertCustomer(rr.Name, rr.Surname, rr.DOB, rr.Address, rr.Identity_No, rr.Contact).Status == CoastalAPIModels.ResponseStatus.Success)
+            RegisterResponse response =  this.cBL.InsertCustomer(rr.Name, rr.Surname, rr.DOB, rr.Address, rr.Identity_No, rr.Contact);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
             {
-                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, "Success");
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
             }
             else
             {
-                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Error. Couldn't Insert Customer");
             }
 
         }
@@ -84,6 +85,53 @@ namespace CoastalAPI.Controllers
             else
             {
                 return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Update Error");
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("TodayTransactions")]
+        public HttpResponseMessage TodayTransactions([FromBody] DayTransactionRequest dtr)
+        {
+            DayTransactionResponse response = this.cBL.ViewDayTransactions(dtr.Day);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Error");
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("UserTransactions")]
+        public HttpResponseMessage UserTransactions([FromBody] UserTransactionRequest utr)
+        {
+            UserTransactionResponse response = this.cBL.ViewUsersTransactions(utr.ID_No);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Error");
+            }
+        }
+
+        [Authorize]
+        [HttpPost, Route("DateRangeTransactions")]
+        public HttpResponseMessage DateRangeTransactions([FromBody] DateRangeTransactionsRequest drtr)
+        {
+            DateRangeTransactionsResponse response = this.cBL.ViewDateRangeTransactions(drtr.StartDate, drtr.EndDate);
+            if (response.Status == CoastalAPIModels.ResponseStatus.Success)
+            {
+                return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            else
+            {
+                return ControllerContext.Request.CreateErrorResponse(HttpStatusCode.NotModified, "Error");
             }
 
         }
