@@ -52,12 +52,12 @@ namespace CoastalAPIDataLayer.Factories
                     tra = new Transaction(this.dbConnectionString)
                     {
                         ID = Convert.ToInt32(reader["ID"] as int?),
-                        Buyer = reader["Buyer"].ToString() ?? "",
-                        Seller = reader["Seller"].ToString() ?? "",
-                        Asset = reader["Asset"].ToString() ?? "",
+                        Buyer = Convert.ToInt32(reader["Buyer"] as int?),
+                        Seller = Convert.ToInt32(reader["Seller"] as int?),
+                        Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
-                        Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
+                        Status = (Transaction.TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
                         Date_Transaction_Requested = Convert.ToDateTime((reader["Date_Transaction_Requested"] as DateTime?).GetValueOrDefault()),
                         Date_Transaction_Approved = Convert.ToDateTime((reader["Date_Transaction_Approved"] as DateTime?).GetValueOrDefault()),
                         Who_Approved = reader["Who_Approved"].ToString() ?? ""
@@ -104,7 +104,7 @@ namespace CoastalAPIDataLayer.Factories
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
-                        Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
+                        Status = (Transaction.TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
                         Date_Transaction_Requested = Convert.ToDateTime((reader["Date_Transaction_Requested"] as DateTime?).GetValueOrDefault()),
                         Date_Transaction_Approved = Convert.ToDateTime((reader["Date_Transaction_Approved"] as DateTime?).GetValueOrDefault()),
                         Who_Approved = reader["Who_Approved"].ToString() ?? ""
@@ -152,7 +152,7 @@ namespace CoastalAPIDataLayer.Factories
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
-                        Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
+                        Status = (Transaction.TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
                         Date_Transaction_Requested = Convert.ToDateTime((reader["Date_Transaction_Requested"] as DateTime?).GetValueOrDefault()),
                         Date_Transaction_Approved = Convert.ToDateTime((reader["Date_Transaction_Approved"] as DateTime?).GetValueOrDefault()),
                         Who_Approved = reader["Who_Approved"].ToString() ?? ""
@@ -198,7 +198,7 @@ namespace CoastalAPIDataLayer.Factories
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
-                        Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
+                        Status = (Transaction.TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
                         Date_Transaction_Requested = Convert.ToDateTime((reader["Date_Transaction_Requested"] as DateTime?).GetValueOrDefault()),
                         Date_Transaction_Approved = Convert.ToDateTime((reader["Date_Transaction_Approved"] as DateTime?).GetValueOrDefault()),
                         Who_Approved = reader["Who_Approved"].ToString() ?? ""
@@ -244,7 +244,7 @@ namespace CoastalAPIDataLayer.Factories
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
-                        Status = (TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
+                        Status = (Transaction.TransactionStatus)Convert.ToInt32((reader["Status"].ToString() ?? "0")),
                         Date_Transaction_Requested = Convert.ToDateTime((reader["Date_Transaction_Requested"] as DateTime?).GetValueOrDefault()),
                         Date_Transaction_Approved = Convert.ToDateTime((reader["Date_Transaction_Approved"] as DateTime?).GetValueOrDefault()),
                         Who_Approved = reader["Who_Approved"].ToString() ?? ""
@@ -313,6 +313,75 @@ namespace CoastalAPIDataLayer.Factories
             }
 
             return total;
+        }
+
+        public bool AddWaitingApprovalTransaction(Transaction tran)
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"INSERT INTO [dbo].[Transaction]
+                                                   ([Buyer]
+                                                   ,[Seller]
+                                                   ,[Asset]
+                                                   ,[Amount]
+                                                   ,[Auto_Sale]
+                                                   ,[Status]
+                                                   ,[Date_Transaction_Requested])
+                                             VALUES
+                                                   (@Buyer
+                                                   ,@Seller
+                                                   ,@Asset
+                                                   ,@Amount
+                                                   ,@Auto_Sale
+                                                   ,@Status
+                                                   ,@DateRequested)", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Buyer", tran.Buyer);
+                cmd.Parameters.AddWithValue("@Seller", tran.Seller);
+                cmd.Parameters.AddWithValue("@Asset", tran.Asset);
+                cmd.Parameters.AddWithValue("@Amount", tran.Amount);
+                cmd.Parameters.AddWithValue("@Auto_Sale", tran.Auto_Sale);
+                cmd.Parameters.AddWithValue("@Status", tran.Status);
+                cmd.Parameters.AddWithValue("@DateRequested", tran.Date_Transaction_Requested);
+
+                affectedRows = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+
+            return affectedRows > 0;
+        }
+
+        public bool UpdateRejectedTransaction (Transaction tran)
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Transaction]
+                                           SET [Buyer] = @Buyer
+                                              ,[Seller] = @Seller
+                                              ,[Asset] = @Asset
+                                              ,[Amount] = @Amount
+                                              ,[Auto_Sale] = @Auto_Sale
+                                              ,[Status] = @Status
+                                              ,[Date_Transaction_Requested] = @DateRequested
+                                         WHERE [ID] = @ID", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Buyer", tran.Buyer);
+                cmd.Parameters.AddWithValue("@Seller", tran.Seller);
+                cmd.Parameters.AddWithValue("@Asset", tran.Asset);
+                cmd.Parameters.AddWithValue("@Amount", tran.Amount);
+                cmd.Parameters.AddWithValue("@Auto_Sale", tran.Auto_Sale);
+                cmd.Parameters.AddWithValue("@Status", tran.Status);
+                cmd.Parameters.AddWithValue("@DateRequested", tran.Date_Transaction_Requested);
+                cmd.Parameters.AddWithValue("@ID", tran.ID);
+
+                affectedRows = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            return affectedRows > 0;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoastalAPIModels.Models
 {
-    public class BuyAssetResponse : GenericResponse
+    public class ReviewTransactionResponse : GenericResponse
     {
         public string Message { get; set; }
     }

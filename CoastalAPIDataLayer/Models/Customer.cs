@@ -114,6 +114,41 @@ namespace CoastalAPIDataLayer.Models
             return affectedRows > 0;
         }
 
+        public bool Update(int id)
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Customers]
+                                           SET [Name] = @Name
+                                              ,[Surname] = @Surname
+                                              ,[DOB] = @DOB
+                                              ,[Address] = @Address
+                                              ,[Identity_No] = @Identity_No
+                                              ,[Contact_No] = @Contact_No
+                                              ,[Blocked] = @Blocked
+                                              ,[Sales_Made] = @Sales_Made
+                                              ,[Rating] = @Rating
+                                         WHERE [ID] = @ID", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Name", Name);
+                cmd.Parameters.AddWithValue("@Surname", Surname);
+                cmd.Parameters.AddWithValue("@DOB", DOB);
+                cmd.Parameters.AddWithValue("@Address", Address);
+                cmd.Parameters.AddWithValue("@Identity_No", Identity_No);
+                cmd.Parameters.AddWithValue("@Contact_No", Contact);
+                cmd.Parameters.AddWithValue("@Blocked", Blocked);
+                cmd.Parameters.AddWithValue("@Sales_Made", Sales_Made);
+                cmd.Parameters.AddWithValue("@Rating", Rating);
+                cmd.Parameters.AddWithValue("@ID", id);
+
+                affectedRows = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            return affectedRows > 0;
+        }
+
         public Customer Get(string id)
         {
             Customer customer = null;
@@ -158,5 +193,51 @@ namespace CoastalAPIDataLayer.Models
             }
             return customer;
         }
+
+        public Customer GetID(int id)
+        {
+            Customer customer = null;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"SELECT [ID]
+                                              ,[Name]
+                                              ,[Surname]
+                                              ,[DOB]
+                                              ,[Address]
+                                              ,[Identity_No]
+                                              ,[Contact_No]
+                                              ,[Blocked]
+                                              ,[Sales_Made]
+                                              ,[Rating]
+                                          FROM [CoastalFinancialDB_Mfundo].[dbo].[Customers]
+                                          WHERE ID = @ID ", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@ID", id);
+
+                SqlDataReader reader =  cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    customer = new Customer(this.dbConnectionString)
+                    {
+                        ID = Convert.ToInt32(reader["ID"] as int?),
+                        Name = reader["Name"].ToString() ?? "",
+                        Surname = reader["Surname"].ToString() ?? "",
+                        DOB = Convert.ToDateTime((reader["DOB"] as DateTime?).GetValueOrDefault()),
+                        Address = reader["Address"].ToString() ?? "",
+                        Identity_No = reader["Identity_No"].ToString() ?? "",
+                        Contact = reader["Contact_No"].ToString() ?? "",
+                        Blocked = Convert.ToBoolean(reader["Blocked"] as bool?),
+                        Sales_Made = Convert.ToInt32(reader["Sales_Made"] as int?),
+                        Rating = Convert.ToInt32(reader["Rating"] as int?)
+                    };
+                }
+
+                con.Close();
+            }
+            return customer;
+        }
+
     }
 }

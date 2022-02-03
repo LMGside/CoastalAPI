@@ -64,8 +64,9 @@
     <Compile Include="Factories\ArtFactory.cs" />
     <Compile Include="Factories\AssetFactory.cs" />
     <Compile Include="Factories\CarFactory.cs" />
+    <Compile Include="Factories\CommissionLogFactory.cs" />
     <Compile Include="Factories\CustomerFactory.cs" />
-    <Compile Include="Factories\ErrorFactory.cs" />
+    <Compile Include="Factories\ErrorLogFactory.cs" />
     <Compile Include="Factories\PropertyFactory.cs" />
     <Compile Include="Factories\SettingsFactory.cs" />
     <Compile Include="Factories\TransactionFactory.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Models\Art.cs" />
     <Compile Include="Models\Asset.cs" />
     <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\CommissionLog.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\ErrorLog.cs" />
     <Compile Include="Models\Property.cs" />

@@ -250,12 +250,25 @@ namespace CoastalAPIUnitTesting
         {
             string owner_id_no = "8907125094763";
             int asset_id = 3;
-            decimal purchase = 300000;
+            decimal purchase = 500000;
 
             BuyAssetResponse bar = coastalBL.BuyAsset(asset_id, owner_id_no, purchase);
 
-            Assert.AreEqual(bar.Error.ErrorMessage, "Normal Valuation not met");
-            Assert.AreEqual(bar.Status, CoastalAPIModels.ResponseStatus.Fail);
+            Assert.AreEqual(bar.Message, "Item is waiting for Approval");
+            Assert.AreEqual(bar.Status, CoastalAPIModels.ResponseStatus.Success);
+        }
+
+
+        [TestMethod]
+        public void TestRejectedAsset()
+        {
+            int transaction_id = 1;
+            ReviewTransactionRequest.TransactionStatus decision =  ReviewTransactionRequest.TransactionStatus.Rejected;
+
+            ReviewTransactionResponse rtr = coastalBL.AppproveTransaction(transaction_id, decision);
+
+            Assert.AreEqual(rtr.Message, "Item has been Rejected");
+            Assert.AreEqual(rtr.Status, CoastalAPIModels.ResponseStatus.Success);
         }
     }
 }

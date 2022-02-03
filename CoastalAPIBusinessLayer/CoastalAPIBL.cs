@@ -22,6 +22,7 @@ namespace CoastalAPIBusinessLayer
         private readonly PropertyFactory propertyFactory;
         private readonly CarFactory carFactory;
         private readonly AssetFactory assetFactory;
+        private readonly CommissionLogFactory commissionLogFactory;
         private readonly string dbConnectionString;
         private readonly ICoastalAPISettings coastalAPISettings;
         public CoastalAPIBL(ICoastalAPISettings coastalAPISettings)
@@ -36,6 +37,7 @@ namespace CoastalAPIBusinessLayer
             this.propertyFactory = new PropertyFactory(this.dbConnectionString);
             this.carFactory = new CarFactory(this.dbConnectionString);
             this.assetFactory = new AssetFactory(this.dbConnectionString);
+            this.commissionLogFactory = new CommissionLogFactory(this.dbConnectionString);
         }
 
         public CoastalAPIBL(string dbConnectionString)
@@ -49,6 +51,7 @@ namespace CoastalAPIBusinessLayer
             this.propertyFactory = new PropertyFactory(this.dbConnectionString);
             this.carFactory = new CarFactory(this.dbConnectionString);
             this.assetFactory = new AssetFactory(this.dbConnectionString);
+            this.commissionLogFactory = new CommissionLogFactory(this.dbConnectionString);
         }
 
         public RegisterResponse InsertCustomer(string name, string surname, DateTime dob, string address, string id, string tele)
@@ -331,7 +334,24 @@ namespace CoastalAPIBusinessLayer
                 Settings settings = new Settings(this.dbConnectionString).Get();
                 Asset asset = new Asset(this.dbConnectionString).Get(asset_Id);
 
-                decimal balance = wallet.Get(newCus.ID).Balance;
+                Wallet buyerW = wallet.Get(newCus.ID);
+                Wallet sellerW = wallet.Get(asset.Owner);
+
+                decimal balance = buyerW.Balance;
+                bool automatic = false;
+
+                switch (newCus.Rating)
+                {
+                    case 0:
+                        automatic = settings.Auto_0;
+                        break;
+                    case 1:
+                        automatic = settings.Auto_1;
+                        break;
+                    case 2:
+                        automatic = settings.Auto_2;
+                        break;
+                }
 
                 if (newCus.Blocked)
                 {
@@ -388,17 +408,120 @@ namespace CoastalAPIBusinessLayer
 
                     return bar;
                 }
-                else if(purchasePrice >= asset.Auto_Valuation)
+                else if(purchasePrice >= asset.Auto_Valuation && automatic)
                 {
+                    decimal commission = 0;
+                    double discount = 0;
+                    double customerLoss = 0;
+                    decimal endCost = 0;
+                    Wallet sellerWallet = wallet.Get(asset.Owner);
+
+                    switch (newCus.Rating)
+                    {
+                        case 1:
+                            discount = 0.0025;
+                            break;
+                        case 2:
+                            discount = 0.005;
+                            break;
+                    }
+
+                    customerLoss = (double)purchasePrice * (1 - discount);
+                    commission = (decimal)(customerLoss * 0.01);
+                    endCost = (decimal)(customerLoss * 0.99);
+
                     Transaction newTrans = this.transactionFactory.Create(e =>
                     {
                         e.Buyer = newCus.ID;
                         e.Seller = asset.Owner;
+                        e.Asset = asset.ID;
+                        e.Amount = endCost;
+                        e.Auto_Sale = true;
+                        e.Status = Transaction.TransactionStatus.Success;
+                        e.Date_Transaction_Requested = DateTime.Now;
+                        e.Date_Transaction_Approved = DateTime.Now;
+                        e.Who_Approved = "Auto";
                     });
-                }
+                    int transID = newTrans.Insert();
 
-                Debug.WriteLine("Transaction will be Posted");
-                return bar;
+                    Debug.WriteLine("Subtract R" + customerLoss + " from Customer Account");
+                    this.walletFactory.WithdrawDeposit(newCus.ID, (decimal)customerLoss);
+
+                    Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
+                    this.walletFactory.AddDeposit(asset.Owner, endCost);
+
+                    Debug.WriteLine("Add R" + commission + " to Commision Log");
+                    CommissionLog clog = this.commissionLogFactory.Create(e =>
+                    {
+                        e.TransactionID = transID;
+                        e.TransactionDate = DateTime.Now;
+                        e.Commission = commission;
+                    });
+                    clog.Insert();
+
+                    Debug.WriteLine("Increment Sale_Made for Customer");
+                    Debug.WriteLine("Check Rating Change");
+                    newCus.Sales_Made += 1;
+                    if (newCus.Sales_Made >= 5 && newCus.Sales_Made <= 10){
+                        newCus.Rating = 1;
+                    }
+                    if (newCus.Sales_Made > 10)
+                    {
+                        newCus.Rating = 2;
+                    }
+                    newCus.Update(newCus.ID);
+
+                    Debug.WriteLine("Change Owner of Asset");
+                    asset.Owner = newCus.ID;
+                    asset.Update();
+
+                    //Update Transaction
+                    newTrans.Status = Transaction.TransactionStatus.Approved;
+                    newTrans.Who_Approved = "Auto";
+                    newTrans.Update(newTrans.ID);
+
+                    bar.Message = "Item has been Auto Processed";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Success;
+                    return bar;
+
+                } else {
+
+                    double discount = 0;
+                    double customerLoss = 0;
+                    decimal endCost = 0;
+                    switch (newCus.Rating)
+                    {
+                        case 1:
+                            discount = 0.0025;
+                            break;
+                        case 2:
+                            discount = 0.005;
+                            break;
+                    }
+
+                    customerLoss = (double)purchasePrice * (1 - discount);
+                    endCost = (decimal)(customerLoss * 0.99);
+
+                    Transaction newTrans = this.transactionFactory.Create(e =>
+                    {
+                        e.Buyer = newCus.ID;
+                        e.Seller = asset.Owner;
+                        e.Asset = asset.ID;
+                        e.Amount = endCost;
+                        e.Auto_Sale = false;
+                        e.Status = Transaction.TransactionStatus.Success;
+                        e.Date_Transaction_Requested = DateTime.Now;
+                    });
+                    this.transactionFactory.AddWaitingApprovalTransaction(newTrans);
+
+                    Debug.WriteLine("Subtract R" + customerLoss + " from Customer Account");
+                    this.walletFactory.WithdrawDeposit(newCus.ID, (decimal)customerLoss);
+
+                    bar.Message = "Item is waiting for Approval";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Success;
+                    return bar;
+
+                }
             }
             catch (Exception e)
             {
@@ -412,9 +535,89 @@ namespace CoastalAPIBusinessLayer
 
                 return bar;
             }
-
-
         }
+
+        public ReviewTransactionResponse AppproveTransaction(int transaction_Id, ReviewTransactionRequest.TransactionStatus decision)
+        {
+            ReviewTransactionResponse rtr = new ReviewTransactionResponse();
+            Transaction trans = this.transactionFactory.Create(e =>
+            {
+                e.ID = transaction_Id;
+            }).Get();
+            Wallet wallet = new Wallet(this.dbConnectionString);
+            Customer customer = new Customer(this.dbConnectionString);
+            Customer newCus = customer.GetID(trans.Buyer);
+            Asset asset = new Asset(this.dbConnectionString).Get(trans.Asset);
+
+            decimal commission = 0;
+            double discount = 0;
+            double customerLoss = 0;
+            decimal endCost = 0;
+
+            // Calculate Amounts
+
+            decimal totalPur = Decimal.Divide(trans.Amount, (decimal)0.99);
+            double totalPur1 = ((double)totalPur);
+            commission = (decimal)(totalPur1 * 0.01);
+            customerLoss = (double)totalPur * (1 - discount);
+            endCost = trans.Amount;
+
+            if (decision == ReviewTransactionRequest.TransactionStatus.Approved)
+            {
+
+                Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
+                this.walletFactory.AddDeposit(trans.Seller, endCost);
+
+                Debug.WriteLine("Add R" + commission + " to Commision Log");
+                CommissionLog clog = this.commissionLogFactory.Create(e =>
+                {
+                    e.TransactionID = trans.ID;
+                    e.TransactionDate = DateTime.Now;
+                    e.Commission = commission;
+                });
+                clog.Insert();
+
+                Debug.WriteLine("Increment Sale_Made for Customer");
+                Debug.WriteLine("Check Rating Change");
+                newCus.Sales_Made += 1;
+                if (newCus.Sales_Made >= 5 && newCus.Sales_Made <= 10)
+                {
+                    newCus.Rating = 1;
+                }
+                if (newCus.Sales_Made > 10)
+                {
+                    newCus.Rating = 2;
+                }
+                newCus.Update(newCus.ID);
+
+                Debug.WriteLine("Change Owner of Asset");
+                asset.Owner = newCus.ID;
+                asset.Update();
+
+                //Update Transaction
+                trans.Status = Transaction.TransactionStatus.Approved;
+                trans.Who_Approved = "Employee";
+                trans.Update(trans.ID);
+
+                rtr.Message = "Item has been Approved";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Success;
+
+                return rtr;
+            }
+            else
+            {
+                this.walletFactory.AddDeposit(trans.Buyer, (decimal)customerLoss);
+
+                trans.Status = Transaction.TransactionStatus.Rejected;
+                this.transactionFactory.UpdateRejectedTransaction(trans);
+
+                rtr.Message = "Item has been Rejected";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Success;
+
+                return rtr;
+            }
+        }
+
         public void BuildAndInsertErrorLog(Exception exception, string errorMessage, string method)
         {
             var errorLog = this.errorLogFactory.Create(e =>

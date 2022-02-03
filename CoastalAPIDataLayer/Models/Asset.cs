@@ -73,5 +73,32 @@ namespace CoastalAPIDataLayer.Models
             }
             return asset;
         }
+
+        public bool Update()
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Asset]
+                                           SET [Type] = @Type
+                                              ,[Auto_Sale] = @AutoSale
+                                              ,[Auto_Valuation] = @AutoVal
+                                              ,[Normal_Valuation] = @NormalVal
+                                              ,[Owner] = @Owner
+                                            WHERE [ID] = @ID", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Type", Type);
+                cmd.Parameters.AddWithValue("@AutoSale", Auto_Sale);
+                cmd.Parameters.AddWithValue("@AutoVal", Auto_Valuation);
+                cmd.Parameters.AddWithValue("@NormalVal", Normal_Valuation);
+                cmd.Parameters.AddWithValue("@Owner", Owner);
+                cmd.Parameters.AddWithValue("@ID", ID);
+                affectedRows =  cmd.ExecuteNonQuery();
+
+                con.Close();
+            }
+            return affectedRows > 0;
+        }
     }
 }
