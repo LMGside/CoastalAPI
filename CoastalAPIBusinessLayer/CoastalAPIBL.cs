@@ -598,7 +598,19 @@ namespace CoastalAPIBusinessLayer
 
             // Calculate Amounts
 
-            decimal totalPur = Decimal.Divide(trans.Amount, (decimal)0.99);
+            switch (newCus.Rating)
+            {
+                case 1:
+                    discount = 0.0025;
+                    break;
+                case 2:
+                    discount = 0.005;
+                    break;
+            }
+
+            decimal customerLoss1 = Decimal.Divide(trans.Amount, (decimal)0.99);
+            decimal totalPur = Decimal.Divide(customerLoss1, (decimal)(1 - discount));
+
             double totalPur1 = ((double)totalPur);
             commission = (decimal)(totalPur1 * 0.01);
             customerLoss = (double)totalPur * (1 - discount);

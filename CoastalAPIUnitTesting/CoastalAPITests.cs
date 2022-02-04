@@ -225,13 +225,13 @@ namespace CoastalAPIUnitTesting
         {
             Art art = coastalBL.ArtFactory.Create(e =>
             {
-                e.Artist = "Kurt Le Frou";
-                e.ArtTitle = "The Dam";
-                e.Year_Completed = 2003;
+                e.Artist = "Tommy Lee";
+                e.ArtTitle = "The Jungle";
+                e.Year_Completed = 2004;
                 e.Type = CoastalAPIDataLayer.Models.Asset.AssetType.Art;
                 e.Auto_Sale = false;
-                e.Auto_Valuation = 100000;
-                e.Normal_Valuation = 70000;
+                e.Auto_Valuation = 200000;
+                e.Normal_Valuation = 100000;
                 e.Owner = 1;
             });
 
@@ -323,7 +323,7 @@ namespace CoastalAPIUnitTesting
         [TestMethod]
         public void TestRejectedAsset()
         {
-            int transaction_id = 1;
+            int transaction_id = 7;
             ReviewTransactionRequest.TransactionStatus decision =  ReviewTransactionRequest.TransactionStatus.Rejected;
 
             ReviewTransactionResponse rtr = coastalBL.AppproveTransaction(transaction_id, decision);
