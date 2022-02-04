@@ -6,5 +6,6 @@ namespace CoastalAPIModels.Models
 {
     public class DeregisterCustomerResponse : GenericResponse
     {
+        public string Message { get; set; }
     }
 }

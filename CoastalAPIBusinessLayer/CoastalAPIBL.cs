@@ -149,11 +149,13 @@ namespace CoastalAPIBusinessLayer
                 if (this.customerFactory.UnfreezeCustomer(id))
                 {
                     ufcr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    ufcr.Message = "Successfuly unblocked account";
                     return ufcr;
                 }
                 else
                 {
                     ufcr.Error.ErrorMessage = "Customer not found";
+                    ufcr.Message = "Customer not found";
                     ufcr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
                     return ufcr;
@@ -188,11 +190,13 @@ namespace CoastalAPIBusinessLayer
                     wallet.Delete(newCus.ID);
                     
                     dcr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    dcr.Message = "Successfully Deregistered Customer";
                     return dcr;
                 }
                 else
                 {
                     dcr.Error.ErrorMessage = "Customer not found";
+                    dcr.Message = "Customer not found";
                     dcr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
                     return dcr;
@@ -372,6 +376,7 @@ namespace CoastalAPIBusinessLayer
                 if (newCus.Blocked)
                 {
                     bar.Error.ErrorMessage = "Account Blocked";
+                    bar.Message = "Account Blocked";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -380,6 +385,7 @@ namespace CoastalAPIBusinessLayer
                 else if (purchasePrice > balance)
                 {
                     bar.Error.ErrorMessage = "Insufficient Balance to make the purchase";
+                    bar.Message = "Insufficient Balance to make the purchase";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -387,7 +393,8 @@ namespace CoastalAPIBusinessLayer
                 }
                 else if(asset.Owner == newCus.ID)
                 {
-                    bar.Error.ErrorMessage = "Asset Already Owned By "+ newCus.Name;
+                    bar.Error.ErrorMessage = "Asset Already Owned By Customer";
+                    bar.Message = "Asset Already Owned By Customer";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -396,6 +403,7 @@ namespace CoastalAPIBusinessLayer
                 else if(this.transactionFactory.MaxTransactionsCheck() >= settings.SalesToday)
                 {
                     bar.Error.ErrorMessage = "Maximized Sales for the Day";
+                    bar.Message = "Maximized Sales for the Day";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -404,6 +412,7 @@ namespace CoastalAPIBusinessLayer
                 else if(this.transactionFactory.MaxTransactionsBuyerCheck(newCus.ID) >= settings.UniqueSalesToday)
                 {
                     bar.Error.ErrorMessage = "Customer has Maximized Sales for the Day";
+                    bar.Message = "Customer has Maximized Sales for the Day";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -412,6 +421,7 @@ namespace CoastalAPIBusinessLayer
                 else if (!asset.Auto_Sale && asset.Owner != 1)
                 {
                     bar.Error.ErrorMessage = "Asset Not for Sale by Customer";
+                    bar.Message = "Asset Not for Sale by Customer";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -419,6 +429,7 @@ namespace CoastalAPIBusinessLayer
                 }else if(asset.Normal_Valuation > purchasePrice)
                 {
                     bar.Error.ErrorMessage = "Normal Valuation not met";
+                    bar.Message = "Normal Valuation not met";
                     bar.Error.CrashedMethod = "BuyAsset";
                     bar.Status = CoastalAPIModels.ResponseStatus.Fail;
 
@@ -496,7 +507,7 @@ namespace CoastalAPIBusinessLayer
                     newTrans.Who_Approved = "Auto";
                     newTrans.Update(newTrans.ID);
 
-                    bar.Message = "Item has been Auto Processed";
+                    bar.Message = "Asset Purchased Successfully.";
                     bar.Status = CoastalAPIModels.ResponseStatus.Success;
                     return bar;
 
@@ -533,7 +544,7 @@ namespace CoastalAPIBusinessLayer
                     Debug.WriteLine("Subtract R" + customerLoss + " from Customer Account");
                     this.walletFactory.WithdrawDeposit(newCus.ID, (decimal)customerLoss);
 
-                    bar.Message = "Item is waiting for Approval";
+                    bar.Message = "Transaction is waiting for Approval";
                     bar.Status = CoastalAPIModels.ResponseStatus.Success;
                     return bar;
 
@@ -560,6 +571,21 @@ namespace CoastalAPIBusinessLayer
             {
                 e.ID = transaction_Id;
             }).Get();
+
+            if(trans == null)
+            {
+                rtr.Message = "Transaction ID Not Found";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                return rtr;
+            }else if(trans.Status == Transaction.TransactionStatus.Approved || trans.Status == Transaction.TransactionStatus.Rejected)
+            {
+                rtr.Message = "Transaction has been reviewed";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                return rtr;
+            }
+
             Wallet wallet = new Wallet(this.dbConnectionString);
             Customer customer = new Customer(this.dbConnectionString);
             Customer newCus = customer.GetID(trans.Buyer);
@@ -612,6 +638,7 @@ namespace CoastalAPIBusinessLayer
 
                 //Update Transaction
                 trans.Status = Transaction.TransactionStatus.Approved;
+                trans.Date_Transaction_Approved = DateTime.Now;
                 trans.Who_Approved = "Employee";
                 trans.Update(trans.ID);
 
@@ -703,6 +730,54 @@ namespace CoastalAPIBusinessLayer
                 drtr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return drtr;
+            }
+        }
+
+        public UserTransactionResponse ViewSuccessfulTransactions()
+        {
+            UserTransactionResponse utr = new UserTransactionResponse();
+            try
+            {
+                utr.Transactions = this.transactionFactory.SuccessfulTransactions();
+                utr.Status = CoastalAPIModels.ResponseStatus.Success;
+
+                return utr;
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Getting Successful Transactions", "ViewSuccessfulTransaction in BL");
+
+                utr.Error.ErrorMessage = "Error Getting Successful Transactions";
+                utr.Error.StackTrace = e.StackTrace;
+                utr.Error.CrashedMethod = "ViewSuccessfulTransaction in BL";
+
+                utr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return utr;
+            }
+        }
+
+        public UserTransactionResponse ViewUnsuccessfulTransactions()
+        {
+            UserTransactionResponse utr = new UserTransactionResponse();
+            try
+            {
+                utr.Transactions = this.transactionFactory.UnsuccessfulTransactions();
+                utr.Status = CoastalAPIModels.ResponseStatus.Success;
+
+                return utr;
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Getting Unsuccessful Transaction", "ViewUnsuccessfulTransaction in BL");
+
+                utr.Error.ErrorMessage = "Error Getting Unsuccessful Transaction";
+                utr.Error.StackTrace = e.StackTrace;
+                utr.Error.CrashedMethod = "ViewunsuccessfulTransaction in BL";
+
+                utr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return utr;
             }
         }
 

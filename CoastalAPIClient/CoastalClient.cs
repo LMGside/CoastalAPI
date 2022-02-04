@@ -61,7 +61,7 @@ namespace CoastalAPIClient
             }
         }
 
-        public string DeregisterCustomer(DeregisterCustomerRequest dcr)
+        public DeregisterCustomerResponse DeregisterCustomer(DeregisterCustomerRequest dcr)
         {
             string methodname = "api/coastalAPI/Deregister";
 
@@ -69,7 +69,7 @@ namespace CoastalAPIClient
             {
                 string response = PerformPostOperation(methodname, dcr);
 
-                return JsonConvert.DeserializeObject<string>(response);
+                return JsonConvert.DeserializeObject<DeregisterCustomerResponse>(response);
             }
             catch (Exception e)
             {
@@ -192,6 +192,22 @@ namespace CoastalAPIClient
         public UserTransactionResponse SuccessfulTransactions(UserTransactionRequest user)
         {
             string methodname = "api/coastalAPI/SuccessfulTransactions";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, user);
+
+                return JsonConvert.DeserializeObject<UserTransactionResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public UserTransactionResponse UnsuccessfulTransactions(UserTransactionRequest user)
+        {
+            string methodname = "api/coastalAPI/UnsuccessfulTransactions";
 
             try
             {

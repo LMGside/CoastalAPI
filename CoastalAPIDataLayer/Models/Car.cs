@@ -69,6 +69,7 @@ namespace CoastalAPIDataLayer.Models
                     cmd.Parameters.AddWithValue("@ID", modified);
                     cmd.Parameters.AddWithValue("@Licence", Licence);
                     cmd.Parameters.AddWithValue("@Manufacturer", Manufacturer);
+                    cmd.Parameters.AddWithValue("@Model", Model);
                     cmd.Parameters.AddWithValue("@Year", Year);
 
                     affected = cmd.ExecuteNonQuery();

@@ -29,8 +29,8 @@ namespace APIConsole
                 Console.WriteLine("5. Deposit to a Customer's Wallet"); //
                 Console.WriteLine("6. Withdraw from a Customer's Wallet"); //
                 Console.WriteLine("7. View Transactions made on a Date"); //
-                Console.WriteLine("8. View Transactions made by User"); //
-                Console.WriteLine("9. View Transactions made between 2 Dates"); //
+                Console.WriteLine("8. View Transactions made by a User"); //
+                Console.WriteLine("9. View Transactions made between two Dates"); //
                 Console.WriteLine("10. Buy an Asset"); //
                 Console.WriteLine("11. Approve/Reject an Asset"); //
                 Console.WriteLine("12. View Successful Transactions");
@@ -70,7 +70,7 @@ namespace APIConsole
                         rr.Identity_No = id;
                         rr.Contact = tele;
                         Console.WriteLine("");
-                        Console.WriteLine(cc.InsertCustomer(rr).Status.ToString());
+                        Console.WriteLine(cc.InsertCustomer(rr).Message);
                         break;
 
                     case 2:
@@ -82,7 +82,7 @@ namespace APIConsole
                         fcr.Identity_No = idNum;
 
                         Console.WriteLine("");
-                        Console.WriteLine(cc.FreezeCustomer(fcr));
+                        Console.WriteLine(cc.FreezeCustomer(fcr).Message);
                         break;
 
                     case 3:
@@ -94,7 +94,7 @@ namespace APIConsole
                         ufcr.Identity_No = idNum2;
 
                         Console.WriteLine("");
-                        Console.WriteLine(cc.UnfreezeCustomer(ufcr));
+                        Console.WriteLine(cc.UnfreezeCustomer(ufcr).Message);
                         break;
 
                     case 4:
@@ -106,7 +106,7 @@ namespace APIConsole
                         dcr.Identity_No = idNum3;
 
                         Console.WriteLine("");
-                        Console.WriteLine(cc.DeregisterCustomer(dcr));
+                        Console.WriteLine(cc.DeregisterCustomer(dcr).Message);
                         break;
 
                     case 5:
@@ -122,7 +122,7 @@ namespace APIConsole
                         dfr.Id_No = idNum5;
 
                         Console.WriteLine("");
-                        Console.WriteLine(cc.DepositFunds(dfr).Status);
+                        Console.WriteLine(cc.DepositFunds(dfr).Message);
                         break;
 
                     case 6:
@@ -130,7 +130,7 @@ namespace APIConsole
                         Console.Write("ID Number: ");
                         string idNum6 = Console.ReadLine();
 
-                        Console.Write("Deposit Amount: ");
+                        Console.Write("Amount Withdrawing: ");
                         decimal amount2 = Convert.ToDecimal(Console.ReadLine());
 
                         WithdrawRequest wr = new WithdrawRequest();
@@ -219,7 +219,7 @@ namespace APIConsole
                         break;
 
                     case 10:
-                        Console.WriteLine("Enter Customer's ID Number");
+                        Console.WriteLine("Enter Buyer's ID Number");
                         Console.Write("ID Number: ");
                         string idNum7 = Console.ReadLine();
 
@@ -235,7 +235,8 @@ namespace APIConsole
                         buyer.Asset_ID = assetID;
 
                         Console.WriteLine("");
-                        Console.WriteLine(cc.BuyAssets(buyer).Message);
+                        BuyAssetResponse bars = cc.BuyAssets(buyer);
+                        Console.WriteLine(bars.Message);
                         break;
 
                     case 11:
@@ -265,11 +266,44 @@ namespace APIConsole
                         break;
 
                     case 12:
+                        Console.WriteLine("Successful Transactions");
+                        UserTransactionRequest utr2 = new UserTransactionRequest();
 
-                        
+                        Console.WriteLine("Loading...");
+                        List<Transaction> listS = cc.SuccessfulTransactions(utr2).Transactions;
+
+                        if (listS.Count > 0)
+                        {
+                            foreach (Transaction t in listS)
+                            {
+                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("None");
+                        }
+
                         break;
 
                     case 13:
+                        Console.WriteLine("Unsuccessful Transactions");
+                        UserTransactionRequest utr3 = new UserTransactionRequest();
+
+                        Console.WriteLine("Loading...");
+                        List<Transaction> listU = cc.UnsuccessfulTransactions(utr3).Transactions;
+
+                        if (listU.Count > 0)
+                        {
+                            foreach (Transaction t in listU)
+                            {
+                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("None");
+                        }
                         break;
                 }
 
