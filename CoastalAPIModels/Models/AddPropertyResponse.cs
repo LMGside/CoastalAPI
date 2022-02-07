@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CoastalAPIDataLayer.Models;
 
 namespace CoastalAPIModels.Models
 {
-    public class UserTransactionResponse : GenericResponse
+    public class AddPropertyResponse : GenericResponse
     {
-        public List<Transaction> Transactions { get; set; }
-
         public string Message { get; set; }
     }
 }

@@ -8,5 +8,6 @@ namespace CoastalAPIModels.Models
     public class DateRangeTransactionsResponse : GenericResponse
     {
         public List<Transaction> Transactions { get; set; }
+        
     }
 }

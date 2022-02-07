@@ -211,5 +211,32 @@ namespace CoastalAPI.Controllers
             return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
             
         }
+
+        [Authorize]
+        [HttpPost, Route("Art")]
+        public HttpResponseMessage AddArt([FromBody] AddArtRequest aar)
+        {
+            AddArtResponse response = this.cBL.InsertArt(aar.Artist, aar.Art_Title, aar.Art_Year, aar.Auto_Sale, aar.Auto_Valuation, aar.Normal_Valuation);
+            return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("Car")]
+        public HttpResponseMessage AddCar([FromBody] AddCarRequest acr)
+        {
+            AddCarResponse response = this.cBL.InsertCar(acr.Licence, acr.Manufacturer, acr.Model, acr.Year, acr.Auto_Sale, acr.Auto_Valuation, acr.Normal_Valuation);
+            return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+
+        }
+
+        [Authorize]
+        [HttpPost, Route("Property")]
+        public HttpResponseMessage AddProperty([FromBody] AddPropertyRequest apr)
+        {
+            AddPropertyResponse response = this.cBL.InsertProperty(apr.Address, apr.SQ, apr.Auto_Sale, apr.Auto_Valuation, apr.Normal_Valuation);
+            return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
+
+        }
     }
 }

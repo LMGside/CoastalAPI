@@ -41,7 +41,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE Date_Transaction_Requested = @Date", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", date.ToString("yyyy-MM-dd"));
@@ -88,7 +91,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE [Buyer] = @User", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@User", buyer);
@@ -135,7 +141,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE [Date_Transaction_Requested] BETWEEN @StartDate AND @EndDate", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
@@ -183,7 +192,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE [Status] = 2", con);
                 cmd.CommandType = CommandType.Text;
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -229,7 +241,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE [Status] = 3", con);
                 cmd.CommandType = CommandType.Text;
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -274,7 +289,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE Date_Transaction_Requested = @Date", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", DateTime.Today.ToString("yyyy-MM-dd"));
@@ -302,7 +320,10 @@ namespace CoastalAPIDataLayer.Factories
                                               ,[Date_Transaction_Requested]
                                               ,[Date_Transaction_Approved]
                                               ,[Who_Approved]
+                                              ,[Customers].[Name]
+                                              ,[Customers].[Surname]
                                           FROM [dbo].[Transaction]
+                                          INNER JOIN [Customers] ON [Transaction].[ID] = [Customers].[ID]
                                           WHERE Date_Transaction_Requested = @Date AND [Buyer] = @Buyer", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", DateTime.Today.ToString("yyyy-MM-dd"));

@@ -26,7 +26,7 @@ namespace CoastalAPIDataLayer.Models
         public int ID { get; set; }
         public AssetType Type { get; set; }
         public bool Auto_Sale { get; set; }
-        public int Auto_Valuation { get; set; }
+        public int? Auto_Valuation { get; set; }
         public int Normal_Valuation { get; set; }
         public int Owner { get; set; }
 

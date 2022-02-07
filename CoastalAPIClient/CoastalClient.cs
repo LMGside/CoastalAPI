@@ -220,5 +220,53 @@ namespace CoastalAPIClient
                 throw e;
             }
         }
+
+        public AddArtResponse AddArt(AddArtRequest art)
+        {
+            string methodname = "api/coastalAPI/Art";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, art);
+
+                return JsonConvert.DeserializeObject<AddArtResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public AddCarResponse AddCar(AddCarRequest car)
+        {
+            string methodname = "api/coastalAPI/Car";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, car);
+
+                return JsonConvert.DeserializeObject<AddCarResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public AddPropertyResponse AddProperty(AddPropertyRequest prop)
+        {
+            string methodname = "api/coastalAPI/Property";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, prop);
+
+                return JsonConvert.DeserializeObject<AddPropertyResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }

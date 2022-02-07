@@ -10,8 +10,26 @@ using CoastalAPIModels.Models;
 
 namespace APIConsole
 {
-    class Program
+    public class Program
     {
+
+        public bool ID_Valid(string id, DateTime dob)
+        {
+            bool valid = false;
+            string year = dob.ToString("yy");
+            string month = dob.ToString("MM");
+            string day = dob.ToString("dd");
+            string startSix = year+month+day;
+
+            string idSix = id.Substring(0, 6);
+
+            if(idSix.CompareTo(startSix) == 0 && id.Length == 13)
+            {
+                valid = true;
+            }
+
+            return valid;
+        }
         public static void Main(string[] args)
         {
             CoastalClient cc = new CoastalClient("Mfundo", "Hunger", "https://localhost:44308/");
@@ -22,19 +40,22 @@ namespace APIConsole
 
             while (options)
             {
-                Console.WriteLine("1. Register a new Customer"); //
-                Console.WriteLine("2. Freeze Customer's Account"); //
-                Console.WriteLine("3. Unfreeze Customer's Account"); //
-                Console.WriteLine("4. Deregister a Customer"); //
-                Console.WriteLine("5. Deposit to a Customer's Wallet"); //
-                Console.WriteLine("6. Withdraw from a Customer's Wallet"); //
-                Console.WriteLine("7. View Transactions made on a Date"); //
-                Console.WriteLine("8. View Transactions made by a User"); //
-                Console.WriteLine("9. View Transactions made between two Dates"); //
-                Console.WriteLine("10. Buy an Asset"); //
-                Console.WriteLine("11. Approve/Reject an Asset"); //
+                Console.WriteLine("1. Register a new Customer");
+                Console.WriteLine("2. Freeze Customer's Account");
+                Console.WriteLine("3. Unfreeze Customer's Account");
+                Console.WriteLine("4. Deregister a Customer");
+                Console.WriteLine("5. Deposit to a Customer's Wallet");
+                Console.WriteLine("6. Withdraw from a Customer's Wallet");
+                Console.WriteLine("7. View Transactions made on a Date");
+                Console.WriteLine("8. View Transactions made by a User");
+                Console.WriteLine("9. View Transactions made between two Dates");
+                Console.WriteLine("10. Buy an Asset");
+                Console.WriteLine("11. Approve/Reject an Asset");
                 Console.WriteLine("12. View Successful Transactions");
                 Console.WriteLine("13. View Unsuccessful Transactions");
+                Console.WriteLine("14. Add Art Asset");
+                Console.WriteLine("15. Add Car Asset");
+                Console.WriteLine("16. Add Property Asset");
                 Console.WriteLine("");
                 //Add Assets if theres time
 
@@ -69,8 +90,17 @@ namespace APIConsole
                         rr.Address = address;
                         rr.Identity_No = id;
                         rr.Contact = tele;
-                        Console.WriteLine("");
-                        Console.WriteLine(cc.InsertCustomer(rr).Message);
+
+                        if(new Program().ID_Valid(id, dob))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine(cc.InsertCustomer(rr).Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine("ID Number Invalid");
+                        }
+
                         break;
 
                     case 2:
@@ -149,18 +179,27 @@ namespace APIConsole
                         dtr.Day = day;
 
                         Console.WriteLine("");
-                        List<Transaction> list1 = cc.DayTransactions(dtr).Transactions;
+                        DayTransactionResponse dtr2 = cc.DayTransactions(dtr);
 
-                        if (list1.Count > 0)
+                        if (dtr2.Status != CoastalAPIModels.ResponseStatus.Error)
                         {
-                            foreach (Transaction t in list1)
+                            List<Transaction> list1 = dtr2.Transactions;
+
+                            if (list1.Count > 0)
                             {
-                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                foreach (Transaction t in list1)
+                                {
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("None");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("None");
+                            Console.WriteLine(dtr2.Error.ExceptionMessage);
                         }
 
                         break;
@@ -174,18 +213,27 @@ namespace APIConsole
                         utr.ID_No = idNum4;
 
                         Console.WriteLine("");
-                        List<Transaction> list2 = cc.UserTransactions(utr).Transactions;
+                        UserTransactionResponse utResponse = cc.UserTransactions(utr);
 
-                        if (list2.Count > 0)
+                        if(utResponse.Status != CoastalAPIModels.ResponseStatus.Error)
                         {
-                            foreach (Transaction t in list2)
+                            List<Transaction> list2 = utResponse.Transactions;
+
+                            if (list2.Count > 0)
                             {
-                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                foreach (Transaction t in list2)
+                                {
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("None");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("None");
+                            Console.WriteLine(utResponse.Error.ExceptionMessage);
                         }
 
                         break;
@@ -202,18 +250,27 @@ namespace APIConsole
                         drtr.EndDate = endD;
 
                         Console.WriteLine("");
-                        List<Transaction> list3 = cc.DateRangeTransactions(drtr).Transactions;
+                        DateRangeTransactionsResponse dateRangeTransactionsResponse = cc.DateRangeTransactions(drtr);
 
-                        if (list3.Count > 0)
+                        if(dateRangeTransactionsResponse.Status != CoastalAPIModels.ResponseStatus.Error)
                         {
-                            foreach (Transaction t in list3)
+                            List<Transaction> list3 = dateRangeTransactionsResponse.Transactions;
+
+                            if (list3.Count > 0)
                             {
-                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                foreach (Transaction t in list3)
+                                {
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("None");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("None");
+                            Console.WriteLine(dateRangeTransactionsResponse.Error.ExceptionMessage);
                         }
 
                         break;
@@ -304,6 +361,127 @@ namespace APIConsole
                         {
                             Console.WriteLine("None");
                         }
+                        break;
+                    case 14:
+                        Console.WriteLine("Type the new Art Details");
+                        bool art = false;
+                        int? autoVal = null;
+
+                        Console.Write("Artist: ");
+                        string artist = Console.ReadLine();
+
+                        Console.Write("Art Title: ");
+                        string title = Console.ReadLine();
+
+                        Console.Write("Year Completed: ");
+                        int artYear = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Auto Sale: 1. True  2.False");
+                        int autoSale = Convert.ToInt32(Console.ReadLine());
+
+                        if(autoSale == 1)
+                        {
+                            art = true;
+                            Console.Write("Auto Valuation Amount: ");
+                            autoVal = Convert.ToInt32(Console.ReadLine());
+                        }
+
+                        Console.Write("Normal Valuation: ");
+                        int normal = Convert.ToInt32(Console.ReadLine());
+
+                        AddArtRequest addArt = new AddArtRequest();
+                        addArt.Artist = artist;
+                        addArt.Art_Title = title;
+                        addArt.Art_Year = artYear;
+                        addArt.Type = Asset.AssetType.Art;
+                        addArt.Auto_Sale = art;
+                        addArt.Auto_Valuation = autoVal;
+                        addArt.Normal_Valuation = normal;
+                        addArt.Owner = 1;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.AddArt(addArt).Message);
+                      
+                        break;
+                    case 15:
+                        Console.WriteLine("Type the new Car Details");
+                        bool car = false;
+                        int? autoVal2 = null;
+
+                        Console.Write("Car Licence Number: ");
+                        string licence = Console.ReadLine();
+
+                        Console.Write("Manufacturer: ");
+                        string manu = Console.ReadLine();
+
+                        Console.Write("Model: ");
+                        string model = Console.ReadLine();
+
+                        Console.Write("Year: ");
+                        int year = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Auto Sale: 1. True  2.False");
+                        int autoSale2 = Convert.ToInt32(Console.ReadLine());
+
+                        if (autoSale2 == 1)
+                        {
+                            car = true;
+                            Console.Write("Auto Valuation Amount: ");
+                            autoVal2 = Convert.ToInt32(Console.ReadLine());
+                        }
+
+                        Console.Write("Normal Valuation: ");
+                        int normal2 = Convert.ToInt32(Console.ReadLine());
+
+                        AddCarRequest addCar = new AddCarRequest();
+                        addCar.Licence = licence;
+                        addCar.Manufacturer = manu;
+                        addCar.Model = model;
+                        addCar.Year = year;
+                        addCar.Type = Asset.AssetType.Car;
+                        addCar.Auto_Sale = car;
+                        addCar.Auto_Valuation = autoVal2;
+                        addCar.Normal_Valuation = normal2;
+                        addCar.Owner = 1;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.AddCar(addCar).Message);
+                        break;
+                    case 16:
+                        Console.WriteLine("Type the new Property Details");
+                        bool prop = false;
+                        int? autoVal3 = null;
+
+                        Console.Write("Property Address: ");
+                        string address2 = Console.ReadLine();
+
+                        Console.Write("Square Meters: ");
+                        int sq = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Auto Sale: 1. True  2.False");
+                        int autoSale3 = Convert.ToInt32(Console.ReadLine());
+
+                        if (autoSale3 == 1)
+                        {
+                            car = true;
+                            Console.Write("Auto Valuation Amount: ");
+                            autoVal3 = Convert.ToInt32(Console.ReadLine());
+                        }
+
+                        Console.Write("Normal Valuation: ");
+                        int normal3 = Convert.ToInt32(Console.ReadLine());
+
+                        AddPropertyRequest addProp = new AddPropertyRequest();
+                        addProp.Address = address2;
+                        addProp.SQ = sq;
+                        addProp.Type = Asset.AssetType.Property;
+                        addProp.Auto_Sale = prop;
+                        addProp.Auto_Valuation = autoVal3;
+                        addProp.Normal_Valuation = normal3;
+                        addProp.Owner = 1;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.AddProperty(addProp).Message);
                         break;
                 }
 

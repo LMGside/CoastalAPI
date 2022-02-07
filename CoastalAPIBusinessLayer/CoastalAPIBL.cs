@@ -184,21 +184,28 @@ namespace CoastalAPIBusinessLayer
                 Wallet wallet = new Wallet(this.dbConnectionString);
                 Customer newCus = customer.Get(id);
 
-                if (newCus != null)
-                {
-                    customer.Delete(newCus.ID);
-                    wallet.Delete(newCus.ID);
-                    
-                    dcr.Status = CoastalAPIModels.ResponseStatus.Success;
-                    dcr.Message = "Successfully Deregistered Customer";
-                    return dcr;
-                }
-                else
+                if (newCus == null)
                 {
                     dcr.Error.ErrorMessage = "Customer not found";
                     dcr.Message = "Customer not found";
                     dcr.Status = CoastalAPIModels.ResponseStatus.Fail;
 
+                    return dcr;
+                }
+                else if (newCus.Blocked)
+                {
+                    dcr.Error.ErrorMessage = "Can't Access Blocked Account";
+                    dcr.Message = "Can't Access Blocked Account";
+                    dcr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return dcr;
+                }else
+                {
+                    customer.Delete(newCus.ID);
+                    wallet.Delete(newCus.ID);
+
+                    dcr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    dcr.Message = "Successfully Deregistered Customer";
                     return dcr;
                 }
             }
@@ -702,6 +709,16 @@ namespace CoastalAPIBusinessLayer
             try
             {
                 Customer getCus = new Customer(this.dbConnectionString).Get(id);
+                if (getCus == null)
+                {
+                    utr.Error.ErrorMessage = "Customer not Found";
+                    utr.Message = "Customer not Found";
+                    utr.Error.CrashedMethod = "ViewUserTransaction";
+                    utr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return utr;
+                }
+
                 utr.Transactions = this.transactionFactory.GetUsersTransactions(getCus.ID);
                 utr.Status = CoastalAPIModels.ResponseStatus.Success;
 
@@ -790,6 +807,144 @@ namespace CoastalAPIBusinessLayer
                 utr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return utr;
+            }
+        }
+
+        public AddCarResponse InsertCar(string licence, string manu, string model, int year, bool autoSale, int? auto, int normal)
+        {
+            AddCarResponse acr = new AddCarResponse();
+            try
+            {
+                Car car = this.CarFactory.Create(e =>
+                {
+                    e.Licence = licence;
+                    e.Manufacturer = manu;
+                    e.Model = model;
+                    e.Year = year;
+                    e.Type = Asset.AssetType.Car;
+                    e.Auto_Sale = autoSale;
+                    e.Auto_Valuation = auto;
+                    e.Normal_Valuation = normal;
+                    e.Owner = 1;
+                });
+
+                if (this.carFactory.CheckCarLicence(licence))
+                {
+                    acr.Error.ErrorMessage = "Car Licence already exists";
+                    acr.Message = "Car Licence already exists";
+                    acr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return acr;
+                }
+                else
+                {
+                    car.Insert();
+
+                    acr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    acr.Message = "Successfully Added";
+                    return acr;
+                }
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Inserting Car Asset", "InsertCar in BL");
+
+                acr.Error.ErrorMessage = "Error Inserting Car Asset";
+                acr.Message = "Error Inserting Car Asset";
+                acr.Error.StackTrace = e.StackTrace;
+                acr.Error.CrashedMethod = "Error Inserting in BL";
+
+                acr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return acr;
+            }
+        }
+
+        public AddArtResponse InsertArt(string artist, string title, int year, bool autoSale, int? auto, int normal)
+        {
+            AddArtResponse aar = new AddArtResponse();
+            try
+            {
+                Art art = this.ArtFactory.Create(e =>
+                {
+                    e.Artist = artist;
+                    e.ArtTitle = title;
+                    e.Year_Completed = year;
+                    e.Type = Asset.AssetType.Art;
+                    e.Auto_Sale = autoSale;
+                    e.Auto_Valuation = auto;
+                    e.Normal_Valuation = normal;
+                    e.Owner = 1;
+                });
+
+                art.Insert();
+
+                aar.Status = CoastalAPIModels.ResponseStatus.Success;
+                aar.Message = "Successfully Added";
+                return aar;
+                
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Inserting Art Asset", "InsertArt in BL");
+
+                aar.Error.ErrorMessage = "Error Inserting Art Asset";
+                aar.Message = "Error Inserting Art Asset";
+                aar.Error.StackTrace = e.StackTrace;
+                aar.Error.CrashedMethod = "Error InsertArt in BL";
+
+                aar.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return aar;
+            }
+        }
+
+        public AddPropertyResponse InsertProperty(string address, int sq, bool autoSale, int? auto, int normal)
+        {
+            AddPropertyResponse apr = new AddPropertyResponse();
+            try
+            {
+                Property prop = this.PropertyFactory.Create(e =>
+                {
+                    e.Address = address;
+                    e.SQ = sq;
+                    e.Type = Asset.AssetType.Property;
+                    e.Auto_Sale = autoSale;
+                    e.Auto_Valuation = auto;
+                    e.Normal_Valuation = normal;
+                    e.Owner = 1;
+                });
+
+                if (this.propertyFactory.CheckPropAddress(address))
+                {
+                    apr.Error.ErrorMessage = "Property Licence already exists";
+                    apr.Message = "Property Licence already exists";
+                    apr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return apr;
+                }
+                else
+                {
+                    prop.Insert();
+
+                    apr.Status = CoastalAPIModels.ResponseStatus.Success;
+                    apr.Message = "Successfully Added";
+                    return apr;
+                }
+
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Inserting Property Asset", "InsertProperty in BL");
+
+                apr.Error.ErrorMessage = "Error Inserting Property Asset";
+                apr.Message = "Error Inserting Property Asset";
+                apr.Error.StackTrace = e.StackTrace;
+                apr.Error.CrashedMethod = "Error InsertProperty in BL";
+
+                apr.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return apr;
             }
         }
 
