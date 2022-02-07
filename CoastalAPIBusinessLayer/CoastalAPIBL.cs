@@ -204,6 +204,7 @@ namespace CoastalAPIBusinessLayer
                     customer.Delete(newCus.ID);
                     wallet.Delete(newCus.ID);
 
+                    this.assetFactory.OwnerRemoved(newCus.ID);
                     dcr.Status = CoastalAPIModels.ResponseStatus.Success;
                     dcr.Message = "Successfully Deregistered Customer";
                     return dcr;
@@ -358,8 +359,28 @@ namespace CoastalAPIBusinessLayer
                 Customer customer = new Customer(this.dbConnectionString);
                 Wallet wallet = new Wallet(this.dbConnectionString);
                 Customer newCus = customer.Get(buyer_Id);
+                if (newCus == null)
+                {
+                    bar.Error.ErrorMessage = "Customer not Found";
+                    bar.Message = "Customer not Found";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+
+                }
                 Settings settings = new Settings(this.dbConnectionString).Get();
                 Asset asset = new Asset(this.dbConnectionString).Get(asset_Id);
+
+                if (asset == null)
+                {
+                    bar.Error.ErrorMessage = "Asset ID Not Found";
+                    bar.Message = "Asset ID Not Found";
+                    bar.Error.CrashedMethod = "BuyAsset";
+                    bar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return bar;
+                }
 
                 Wallet buyerW = wallet.Get(newCus.ID);
                 Wallet sellerW = wallet.Get(asset.Owner);
@@ -596,7 +617,27 @@ namespace CoastalAPIBusinessLayer
             Wallet wallet = new Wallet(this.dbConnectionString);
             Customer customer = new Customer(this.dbConnectionString);
             Customer newCus = customer.GetID(trans.Buyer);
+            if (newCus == null)
+            {
+                rtr.Error.ErrorMessage = "Customer not Found";
+                rtr.Message = "Customer not Found";
+                rtr.Error.CrashedMethod = "ApproveTransaction";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                return rtr;
+
+            }
             Asset asset = new Asset(this.dbConnectionString).Get(trans.Asset);
+
+            if (asset == null)
+            {
+                rtr.Error.ErrorMessage = "Asset ID Not Found";
+                rtr.Message = "Asset ID Not Found";
+                rtr.Error.CrashedMethod = "ApproveTransaction";
+                rtr.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                return rtr;
+            }
 
             decimal commission = 0;
             double discount = 0;
@@ -899,7 +940,7 @@ namespace CoastalAPIBusinessLayer
             }
         }
 
-        public AddPropertyResponse InsertProperty(string address, int sq, bool autoSale, int? auto, int normal)
+        public AddPropertyResponse InsertProperty(string address, int sq, CoastalAPIDataLayer.Models.Property.PropertyType propType, bool autoSale, int? auto, int normal)
         {
             AddPropertyResponse apr = new AddPropertyResponse();
             try
@@ -909,6 +950,7 @@ namespace CoastalAPIBusinessLayer
                     e.Address = address;
                     e.SQ = sq;
                     e.Type = Asset.AssetType.Property;
+                    e.Property_Type = propType; 
                     e.Auto_Sale = autoSale;
                     e.Auto_Valuation = auto;
                     e.Normal_Valuation = normal;
@@ -945,6 +987,92 @@ namespace CoastalAPIBusinessLayer
                 apr.Status = CoastalAPIModels.ResponseStatus.Error;
 
                 return apr;
+            }
+        }
+
+        public DeregisterAssetResponse DeregisterAsset(int id)
+        {
+            DeregisterAssetResponse dar = new DeregisterAssetResponse();
+            try
+            {
+                Asset asset = new Asset(this.dbConnectionString).Get(id);
+
+                if (asset == null)
+                {
+                    dar.Error.ErrorMessage = "Asset Not found";
+                    dar.Message = "Asset Not found";
+                    dar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return dar;
+                }
+                else if (asset.Owner != 1)
+                {
+                    dar.Error.ErrorMessage = "Can't Deregister Customer's Assets";
+                    dar.Message = "Can't Deregister Customer's Assets";
+                    dar.Status = CoastalAPIModels.ResponseStatus.Fail;
+
+                    return dar;
+                }
+
+                if(asset.Type == Asset.AssetType.Property)
+                {
+                    Property prop = this.propertyFactory.Create(e =>
+                    {
+                        e.ID = id;
+                    });
+
+                    prop.DeleteProp();
+                    asset.Delete(id);
+
+                    dar.Status = CoastalAPIModels.ResponseStatus.Success;
+                    dar.Message = "Successfully Deregistered Property Asset";
+                    return dar;
+                }
+                else if(asset.Type == Asset.AssetType.Car)
+                {
+                    Car car = this.carFactory.Create(e =>
+                    {
+                        e.ID = id;
+                    });
+
+                    car.DeleteCar();
+                    asset.Delete(id);
+
+                    dar.Status = CoastalAPIModels.ResponseStatus.Success;
+                    dar.Message = "Successfully Deregistered Car Asset";
+                    return dar;
+                }
+                else if(asset.Type == Asset.AssetType.Art)
+                {
+                    Art art = this.artFactory.Create(e =>
+                    {
+                        e.ID = id;
+                    });
+
+                    art.DeleteArt();
+                    asset.Delete(id);
+
+                    dar.Status = CoastalAPIModels.ResponseStatus.Success;
+                    dar.Message = "Successfully Deregistered Art Asset";
+                    return dar;
+                }
+
+                dar.Status = CoastalAPIModels.ResponseStatus.Fail;
+                dar.Message = "Asset Type Not Found";
+                return dar;
+
+            }
+            catch (Exception e)
+            {
+                BuildAndInsertErrorLog(e, "Error Deleting Asset", "DeregisterAsset in BL");
+
+                dar.Error.ErrorMessage = "Error Deleting Asset";
+                dar.Error.StackTrace = e.StackTrace;
+                dar.Error.CrashedMethod = "DeregisterAsset in  BL";
+
+                dar.Status = CoastalAPIModels.ResponseStatus.Error;
+
+                return dar;
             }
         }
 

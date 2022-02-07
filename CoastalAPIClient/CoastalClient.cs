@@ -268,5 +268,21 @@ namespace CoastalAPIClient
                 throw e;
             }
         }
+
+        public DeregisterAssetResponse RemoveAsset(DeregisterAssetRequest dar)
+        {
+            string methodname = "api/coastalAPI/RemoveAsset";
+
+            try
+            {
+                string response = PerformPostOperation(methodname, dar);
+
+                return JsonConvert.DeserializeObject<DeregisterAssetResponse>(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }

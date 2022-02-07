@@ -43,5 +43,24 @@ namespace CoastalAPIDataLayer.Factories
 
             return affected > 0;
         }
+
+        public bool OwnerRemoved(int oldOwner)
+        {
+            int affected = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"UPDATE [dbo].[Asset]
+                                            SET [Owner] = 1
+                                            WHERE [Owner] = @OldOwner", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@OldOwner", oldOwner);
+                affected = cmd.ExecuteNonQuery();
+
+                con.Close();
+            }
+
+            return affected > 0;
+        }
     }
 }

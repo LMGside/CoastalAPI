@@ -357,6 +357,16 @@ namespace CoastalAPIUnitTesting
         }
 
         [TestMethod]
+        public void TestViewTransactionsUserInvalid()
+        {
+            string user = "49865325094763";
+
+            var list = coastalBL.ViewUsersTransactions(user).Message;
+
+            Assert.AreEqual(list, "Customer not Found");
+        }
+
+        [TestMethod]
         public void TestViewTransactionsDate()
         {
             DateTime date = new DateTime(2022, 02, 03);
@@ -405,5 +415,25 @@ namespace CoastalAPIUnitTesting
                 Assert.IsTrue(x.Status == Transaction.TransactionStatus.Rejected);
             }
         }
+
+        [TestMethod]
+        public void TestDeregisterAssetInvalid()
+        {
+            int id = 46;
+            DeregisterAssetResponse dar = coastalBL.DeregisterAsset(id);
+
+            Assert.AreEqual(dar.Message, "Asset Not found");
+        }
+
+        [TestMethod]
+        public void TestDeregisterOwnerAsset()
+        {
+            int id = 9;
+            DeregisterAssetResponse dar = coastalBL.DeregisterAsset(id);
+
+            Assert.AreEqual(dar.Message, "Can't Deregister Customer's Assets");
+        }
+
+
     }
 }

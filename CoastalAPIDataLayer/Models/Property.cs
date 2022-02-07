@@ -52,7 +52,14 @@ namespace CoastalAPIDataLayer.Models
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Type", Type);
                 cmd.Parameters.AddWithValue("@AutoSale", Auto_Sale);
-                cmd.Parameters.AddWithValue("@AutoVal", Auto_Valuation);
+                if (Auto_Valuation != null)
+                {
+                    cmd.Parameters.AddWithValue("@AutoVal", Auto_Valuation);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@AutoVal", DBNull.Value);
+                }
                 cmd.Parameters.AddWithValue("@NormalVal", Normal_Valuation);
                 cmd.Parameters.AddWithValue("@Owner", Owner);
 
@@ -83,5 +90,24 @@ namespace CoastalAPIDataLayer.Models
 
             return affected > 0;
         }
+
+        public bool DeleteProp()
+        {
+            int affectedRows = 0;
+            using (var con = new SqlConnection(this.dbConnectionString))
+            {
+                con.Open();
+                var cmd = new SqlCommand(@"DELETE [dbo].[Property]
+                                         WHERE [ID] = @ID", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@ID", Property_ID);
+
+                affectedRows = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            return affectedRows > 0;
+        }
+
+
     }
 }

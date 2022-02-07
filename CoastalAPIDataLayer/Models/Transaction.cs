@@ -17,7 +17,12 @@ namespace CoastalAPIDataLayer.Models
         }
         public int ID { get; set; }
         public int Buyer { get; set; }
+
+        public string Name1 { get; set; }
+        public string Surname1 { get; set; }
         public int Seller { get; set; }
+        public string Name2 { get; set; }
+        public string Surname2 { get; set; }
         public int Asset { get; set; }
         public decimal Amount { get; set; }
         public bool Auto_Sale { get; set; }

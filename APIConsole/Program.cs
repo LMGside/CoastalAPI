@@ -56,6 +56,7 @@ namespace APIConsole
                 Console.WriteLine("14. Add Art Asset");
                 Console.WriteLine("15. Add Car Asset");
                 Console.WriteLine("16. Add Property Asset");
+                Console.WriteLine("17. Deregister Asset");
                 Console.WriteLine("");
                 //Add Assets if theres time
 
@@ -189,7 +190,7 @@ namespace APIConsole
                             {
                                 foreach (Transaction t in list1)
                                 {
-                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Name1 + " "+ t.Surname1 + ", Seller: " + t.Name2 + " " + t.Surname2 + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved + ", Approved By: " + t.Who_Approved);
                                 }
                             }
                             else
@@ -223,7 +224,7 @@ namespace APIConsole
                             {
                                 foreach (Transaction t in list2)
                                 {
-                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Name1 + " " + t.Surname1 + ", Seller: " + t.Name2 + " " + t.Surname2 + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved + ", Approved By: " + t.Who_Approved);
                                 }
                             }
                             else
@@ -260,7 +261,7 @@ namespace APIConsole
                             {
                                 foreach (Transaction t in list3)
                                 {
-                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                    Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Name1 + " " + t.Surname1 + ", Seller: " + t.Name2 + " " + t.Surname2 + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved + ", Approved By: " + t.Who_Approved);
                                 }
                             }
                             else
@@ -333,7 +334,7 @@ namespace APIConsole
                         {
                             foreach (Transaction t in listS)
                             {
-                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Name1 + " " + t.Surname1 + ", Seller: " + t.Name2 + " " + t.Surname2 + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved + ", Approved By: " + t.Who_Approved);
                             }
                         }
                         else
@@ -354,7 +355,7 @@ namespace APIConsole
                         {
                             foreach (Transaction t in listU)
                             {
-                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Buyer + ", Seller: " + t.Seller + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved);
+                                Console.WriteLine("ID: " + t.ID + ", Buyer: " + t.Name1 + " " + t.Surname1 + ", Seller: " + t.Name2 + " " + t.Surname2 + ", Asset ID: " + t.Asset + ", Status: " + t.Status.ToString() + ", Date Requested: " + t.Date_Transaction_Requested + ", Date Approved: " + t.Date_Transaction_Approved + ", Approved By: " + t.Who_Approved);
                             }
                         }
                         else
@@ -364,7 +365,7 @@ namespace APIConsole
                         break;
                     case 14:
                         Console.WriteLine("Type the new Art Details");
-                        bool art = false;
+                        bool art = true;
                         int? autoVal = null;
 
                         Console.Write("Artist: ");
@@ -381,7 +382,7 @@ namespace APIConsole
 
                         if(autoSale == 1)
                         {
-                            art = true;
+                            art = false;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal = Convert.ToInt32(Console.ReadLine());
                         }
@@ -405,7 +406,7 @@ namespace APIConsole
                         break;
                     case 15:
                         Console.WriteLine("Type the new Car Details");
-                        bool car = false;
+                        bool car = true;
                         int? autoVal2 = null;
 
                         Console.Write("Car Licence Number: ");
@@ -425,7 +426,7 @@ namespace APIConsole
 
                         if (autoSale2 == 1)
                         {
-                            car = true;
+                            car = false;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal2 = Convert.ToInt32(Console.ReadLine());
                         }
@@ -449,7 +450,7 @@ namespace APIConsole
                         break;
                     case 16:
                         Console.WriteLine("Type the new Property Details");
-                        bool prop = false;
+                        bool prop = true;
                         int? autoVal3 = null;
 
                         Console.Write("Property Address: ");
@@ -458,12 +459,15 @@ namespace APIConsole
                         Console.Write("Square Meters: ");
                         int sq = Convert.ToInt32(Console.ReadLine());
 
+                        Console.Write("Property Type: 1. House 2. Apartment 3. Commercial Building");
+                        int propType = Convert.ToInt32(Console.ReadLine());
+
                         Console.WriteLine("Auto Sale: 1. True  2.False");
                         int autoSale3 = Convert.ToInt32(Console.ReadLine());
 
                         if (autoSale3 == 1)
                         {
-                            car = true;
+                            prop = false;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal3 = Convert.ToInt32(Console.ReadLine());
                         }
@@ -475,6 +479,16 @@ namespace APIConsole
                         addProp.Address = address2;
                         addProp.SQ = sq;
                         addProp.Type = Asset.AssetType.Property;
+                        if(propType == 1)
+                        {
+                            addProp.Property_Type = Property.PropertyType.House;
+                        }else if(propType == 2)
+                        {
+                            addProp.Property_Type = Property.PropertyType.Apartment;
+                        }else if(propType == 3)
+                        {
+                            addProp.Property_Type = Property.PropertyType.Commercial_Building;
+                        }
                         addProp.Auto_Sale = prop;
                         addProp.Auto_Valuation = autoVal3;
                         addProp.Normal_Valuation = normal3;
@@ -482,6 +496,16 @@ namespace APIConsole
 
                         Console.WriteLine("");
                         Console.WriteLine(cc.AddProperty(addProp).Message);
+                        break;
+                    case 17:
+                        Console.Write("Enter Asset ID: ");
+                        int assetID2 = Convert.ToInt32(Console.ReadLine());
+
+                        DeregisterAssetRequest deAsset = new DeregisterAssetRequest();
+                        deAsset.Asset_ID = assetID2;
+
+                        Console.WriteLine("");
+                        Console.WriteLine(cc.RemoveAsset(deAsset).Message);
                         break;
                 }
 

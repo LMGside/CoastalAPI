@@ -212,6 +212,11 @@ namespace CoastalAPI.Controllers
             
         }
 
+        /// <summary>
+        /// Add Art
+        /// </summary>
+        /// <param name="aar"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost, Route("Art")]
         public HttpResponseMessage AddArt([FromBody] AddArtRequest aar)
@@ -221,6 +226,11 @@ namespace CoastalAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Add Car
+        /// </summary>
+        /// <param name="acr"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost, Route("Car")]
         public HttpResponseMessage AddCar([FromBody] AddCarRequest acr)
@@ -230,13 +240,32 @@ namespace CoastalAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Add Property
+        /// </summary>
+        /// <param name="apr"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost, Route("Property")]
         public HttpResponseMessage AddProperty([FromBody] AddPropertyRequest apr)
         {
-            AddPropertyResponse response = this.cBL.InsertProperty(apr.Address, apr.SQ, apr.Auto_Sale, apr.Auto_Valuation, apr.Normal_Valuation);
+            AddPropertyResponse response = this.cBL.InsertProperty(apr.Address, apr.SQ, apr.Property_Type, apr.Auto_Sale, apr.Auto_Valuation, apr.Normal_Valuation);
             return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
 
+        }
+
+        /// <summary>
+        /// Remove Asset
+        /// </summary>
+        /// <param name="dar"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost, Route("RemoveAsset")]
+        public HttpResponseMessage DeregisterAsset([FromBody] DeregisterAssetRequest dar)
+        {
+            DeregisterAssetResponse response = this.cBL.DeregisterAsset(dar.Asset_ID);
+
+            return ControllerContext.Request.CreateResponse(HttpStatusCode.OK, response);
         }
     }
 }
