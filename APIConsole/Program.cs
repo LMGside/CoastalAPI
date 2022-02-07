@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,16 @@ namespace APIConsole
             }
 
             return valid;
+        }
+
+        public bool Valid_Date(string date)
+        {
+            bool valid = false;
+            DateTime d;
+
+            bool chValidity = DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+
+            return chValidity;
         }
         public static void Main(string[] args)
         {
