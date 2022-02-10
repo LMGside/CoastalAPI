@@ -446,7 +446,7 @@ namespace CoastalAPIBusinessLayer
 
                     return bar;
                 }
-                else if (!asset.Auto_Sale && asset.Owner != 1)
+                else if ( balance <= asset.Auto_Valuation && !asset.Auto_Sale && asset.Owner != 0)
                 {
                     bar.Error.ErrorMessage = "Asset Not for Sale by Customer";
                     bar.Message = "Asset Not for Sale by Customer";
@@ -502,8 +502,11 @@ namespace CoastalAPIBusinessLayer
                     Debug.WriteLine("Subtract R" + customerLoss + " from Customer Account");
                     this.walletFactory.WithdrawDeposit(newCus.ID, (decimal)customerLoss);
 
-                    Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
-                    this.walletFactory.AddDeposit(asset.Owner, endCost);
+                    if(asset.Owner != 0)
+                    {
+                        Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
+                        this.walletFactory.AddDeposit(asset.Owner, endCost);
+                    }
 
                     Debug.WriteLine("Add R" + commission + " to Commision Log");
                     CommissionLog clog = this.commissionLogFactory.Create(e =>
@@ -866,7 +869,7 @@ namespace CoastalAPIBusinessLayer
                     e.Auto_Sale = autoSale;
                     e.Auto_Valuation = auto;
                     e.Normal_Valuation = normal;
-                    e.Owner = 1;
+                    e.Owner = 0;
                 });
 
                 if (this.carFactory.CheckCarLicence(licence))
@@ -915,7 +918,7 @@ namespace CoastalAPIBusinessLayer
                     e.Auto_Sale = autoSale;
                     e.Auto_Valuation = auto;
                     e.Normal_Valuation = normal;
-                    e.Owner = 1;
+                    e.Owner = 0;
                 });
 
                 art.Insert();
@@ -954,7 +957,7 @@ namespace CoastalAPIBusinessLayer
                     e.Auto_Sale = autoSale;
                     e.Auto_Valuation = auto;
                     e.Normal_Valuation = normal;
-                    e.Owner = 1;
+                    e.Owner = 0;
                 });
 
                 if (this.propertyFactory.CheckPropAddress(address))
@@ -1005,7 +1008,7 @@ namespace CoastalAPIBusinessLayer
 
                     return dar;
                 }
-                else if (asset.Owner != 1)
+                else if (asset.Owner != 0)
                 {
                     dar.Error.ErrorMessage = "Can't Deregister Customer's Assets";
                     dar.Message = "Can't Deregister Customer's Assets";

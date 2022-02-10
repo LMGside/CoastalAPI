@@ -394,7 +394,7 @@ namespace APIConsole
                         break;
                     case 14:
                         Console.WriteLine("Type the new Art Details");
-                        bool art = true;
+                        bool art = false;
                         int? autoVal = null;
 
                         Console.Write("Artist: ");
@@ -411,7 +411,7 @@ namespace APIConsole
 
                         if(autoSale == 1)
                         {
-                            art = false;
+                            art = true;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal = Convert.ToInt32(Console.ReadLine());
                         }
@@ -443,7 +443,7 @@ namespace APIConsole
                         break;
                     case 15:
                         Console.WriteLine("Type the new Car Details");
-                        bool car = true;
+                        bool car = false;
                         int? autoVal2 = null;
 
                         Console.Write("Car Licence Number: ");
@@ -463,7 +463,7 @@ namespace APIConsole
 
                         if (autoSale2 == 1)
                         {
-                            car = false;
+                            car = true;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal2 = Convert.ToInt32(Console.ReadLine());
                         }
@@ -497,7 +497,7 @@ namespace APIConsole
                         break;
                     case 16:
                         Console.WriteLine("Type the new Property Details");
-                        bool prop = true;
+                        bool prop = false;
                         int? autoVal3 = null;
 
                         Console.Write("Property Address: ");
@@ -514,7 +514,7 @@ namespace APIConsole
 
                         if (autoSale3 == 1)
                         {
-                            prop = false;
+                            prop = true;
                             Console.Write("Auto Valuation Amount: ");
                             autoVal3 = Convert.ToInt32(Console.ReadLine());
                         }

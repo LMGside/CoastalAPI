@@ -51,7 +51,7 @@ namespace CoastalAPIDataLayer.Factories
             {
                 con.Open();
                 var cmd = new SqlCommand(@"UPDATE [dbo].[Asset]
-                                            SET [Owner] = 1
+                                            SET [Owner] = 0
                                             WHERE [Owner] = @OldOwner", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@OldOwner", oldOwner);
