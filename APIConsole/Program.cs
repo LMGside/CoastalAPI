@@ -41,10 +41,28 @@ namespace APIConsole
 
             return chValidity;
         }
+
+        public bool ValidValuations(int? auto, int normal)
+        {
+            if(auto == null)
+            {
+                return true;
+            }
+
+            if(normal > auto)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         public static void Main(string[] args)
         {
             CoastalClient cc = new CoastalClient("Mfundo", "Hunger", "https://localhost:44308/");
             bool options = true;
+            Program pro = new Program();
 
             Console.WriteLine("Welcome to the Coastal Finance API Demo");
             Console.WriteLine("");
@@ -103,7 +121,7 @@ namespace APIConsole
                         rr.Identity_No = id;
                         rr.Contact = tele;
 
-                        if(new Program().ID_Valid(id, dob))
+                        if(pro.ID_Valid(id, dob))
                         {
                             Console.WriteLine("");
                             Console.WriteLine(cc.InsertCustomer(rr).Message);
@@ -401,19 +419,27 @@ namespace APIConsole
                         Console.Write("Normal Valuation: ");
                         int normal = Convert.ToInt32(Console.ReadLine());
 
-                        AddArtRequest addArt = new AddArtRequest();
-                        addArt.Artist = artist;
-                        addArt.Art_Title = title;
-                        addArt.Art_Year = artYear;
-                        addArt.Type = Asset.AssetType.Art;
-                        addArt.Auto_Sale = art;
-                        addArt.Auto_Valuation = autoVal;
-                        addArt.Normal_Valuation = normal;
-                        addArt.Owner = 1;
+                        if(pro.ValidValuations(autoVal, normal))
+                        {
+                            AddArtRequest addArt = new AddArtRequest();
+                            addArt.Artist = artist;
+                            addArt.Art_Title = title;
+                            addArt.Art_Year = artYear;
+                            addArt.Type = Asset.AssetType.Art;
+                            addArt.Auto_Sale = art;
+                            addArt.Auto_Valuation = autoVal;
+                            addArt.Normal_Valuation = normal;
+                            addArt.Owner = 1;
 
-                        Console.WriteLine("");
-                        Console.WriteLine(cc.AddArt(addArt).Message);
-                      
+                            Console.WriteLine("");
+                            Console.WriteLine(cc.AddArt(addArt).Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Auto Valuation can't be less than Normal Valuation");
+                        }
+
                         break;
                     case 15:
                         Console.WriteLine("Type the new Car Details");
@@ -445,19 +471,29 @@ namespace APIConsole
                         Console.Write("Normal Valuation: ");
                         int normal2 = Convert.ToInt32(Console.ReadLine());
 
-                        AddCarRequest addCar = new AddCarRequest();
-                        addCar.Licence = licence;
-                        addCar.Manufacturer = manu;
-                        addCar.Model = model;
-                        addCar.Year = year;
-                        addCar.Type = Asset.AssetType.Car;
-                        addCar.Auto_Sale = car;
-                        addCar.Auto_Valuation = autoVal2;
-                        addCar.Normal_Valuation = normal2;
-                        addCar.Owner = 1;
+                        if(pro.ValidValuations(autoVal2, normal2))
+                        {
+                            AddCarRequest addCar = new AddCarRequest();
+                            addCar.Licence = licence;
+                            addCar.Manufacturer = manu;
+                            addCar.Model = model;
+                            addCar.Year = year;
+                            addCar.Type = Asset.AssetType.Car;
+                            addCar.Auto_Sale = car;
+                            addCar.Auto_Valuation = autoVal2;
+                            addCar.Normal_Valuation = normal2;
+                            addCar.Owner = 1;
 
-                        Console.WriteLine("");
-                        Console.WriteLine(cc.AddCar(addCar).Message);
+                            Console.WriteLine("");
+                            Console.WriteLine(cc.AddCar(addCar).Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Auto Valuation can't be less than Normal Valuation");
+                        }
+
+                        
                         break;
                     case 16:
                         Console.WriteLine("Type the new Property Details");
@@ -470,7 +506,7 @@ namespace APIConsole
                         Console.Write("Square Meters: ");
                         int sq = Convert.ToInt32(Console.ReadLine());
 
-                        Console.Write("Property Type: 1. House 2. Apartment 3. Commercial Building");
+                        Console.WriteLine("Property Type: 1. House 2. Apartment 3. Commercial Building");
                         int propType = Convert.ToInt32(Console.ReadLine());
 
                         Console.WriteLine("Auto Sale: 1. True  2.False");
@@ -486,27 +522,39 @@ namespace APIConsole
                         Console.Write("Normal Valuation: ");
                         int normal3 = Convert.ToInt32(Console.ReadLine());
 
-                        AddPropertyRequest addProp = new AddPropertyRequest();
-                        addProp.Address = address2;
-                        addProp.SQ = sq;
-                        addProp.Type = Asset.AssetType.Property;
-                        if(propType == 1)
+                        if(pro.ValidValuations(autoVal3, normal3))
                         {
-                            addProp.Property_Type = Property.PropertyType.House;
-                        }else if(propType == 2)
-                        {
-                            addProp.Property_Type = Property.PropertyType.Apartment;
-                        }else if(propType == 3)
-                        {
-                            addProp.Property_Type = Property.PropertyType.Commercial_Building;
-                        }
-                        addProp.Auto_Sale = prop;
-                        addProp.Auto_Valuation = autoVal3;
-                        addProp.Normal_Valuation = normal3;
-                        addProp.Owner = 1;
+                            AddPropertyRequest addProp = new AddPropertyRequest();
+                            addProp.Address = address2;
+                            addProp.SQ = sq;
+                            addProp.Type = Asset.AssetType.Property;
+                            if (propType == 1)
+                            {
+                                addProp.Property_Type = Property.PropertyType.House;
+                            }
+                            else if (propType == 2)
+                            {
+                                addProp.Property_Type = Property.PropertyType.Apartment;
+                            }
+                            else if (propType == 3)
+                            {
+                                addProp.Property_Type = Property.PropertyType.Commercial_Building;
+                            }
+                            addProp.Auto_Sale = prop;
+                            addProp.Auto_Valuation = autoVal3;
+                            addProp.Normal_Valuation = normal3;
+                            addProp.Owner = 1;
 
-                        Console.WriteLine("");
-                        Console.WriteLine(cc.AddProperty(addProp).Message);
+                            Console.WriteLine("");
+                            Console.WriteLine(cc.AddProperty(addProp).Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Auto Valuation can't be less than Normal Valuation");
+                        }
+
+                        
                         break;
                     case 17:
                         Console.Write("Enter Asset ID: ");
