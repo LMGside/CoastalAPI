@@ -196,7 +196,7 @@ namespace CoastalAPIUnitTesting
                 e.Auto_Sale = false;
                 e.Auto_Valuation = 3000000;
                 e.Normal_Valuation = 1500000;
-                e.Owner = 1;
+                e.Owner = 0;
             });
 
             Assert.IsTrue(prop.Insert());
@@ -214,7 +214,7 @@ namespace CoastalAPIUnitTesting
                 e.Auto_Sale = true;
                 e.Auto_Valuation = 7000000;
                 e.Normal_Valuation = 3900000;
-                e.Owner = 1;
+                e.Owner = 0;
             });
 
             Assert.IsTrue(prop.Insert());
@@ -232,7 +232,7 @@ namespace CoastalAPIUnitTesting
                 e.Auto_Sale = false;
                 e.Auto_Valuation = 200000;
                 e.Normal_Valuation = 100000;
-                e.Owner = 1;
+                e.Owner = 0;
             });
 
             Assert.IsTrue(art.Insert());
@@ -251,7 +251,7 @@ namespace CoastalAPIUnitTesting
                 e.Auto_Sale = false;
                 e.Auto_Valuation = 900000;
                 e.Normal_Valuation = 800000;
-                e.Owner = 1;
+                e.Owner = 0;
             });
 
             Assert.IsTrue(car.Insert());
@@ -296,7 +296,7 @@ namespace CoastalAPIUnitTesting
         [TestMethod]
         public void TestBuyOwnAsset()
         {
-            string owner_id_no = "1";
+            string owner_id_no = "0";
             int asset_id = 1;
             decimal purchase = 4;
 

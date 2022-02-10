@@ -446,7 +446,7 @@ namespace CoastalAPIBusinessLayer
 
                     return bar;
                 }
-                else if ( balance <= asset.Auto_Valuation && !asset.Auto_Sale && asset.Owner != 0)
+                else if ( purchasePrice <= asset.Auto_Valuation && !asset.Auto_Sale && asset.Owner != 0)
                 {
                     bar.Error.ErrorMessage = "Asset Not for Sale by Customer";
                     bar.Message = "Asset Not for Sale by Customer";
@@ -670,8 +670,11 @@ namespace CoastalAPIBusinessLayer
             if (decision == ReviewTransactionRequest.TransactionStatus.Approved)
             {
 
-                Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
-                this.walletFactory.AddDeposit(trans.Seller, endCost);
+                if(asset.Owner != 0)
+                {
+                    Debug.WriteLine("Add R" + endCost + " to Seller's Customer Account");
+                    this.walletFactory.AddDeposit(trans.Seller, endCost);
+                }
 
                 Debug.WriteLine("Add R" + commission + " to Commision Log");
                 CommissionLog clog = this.commissionLogFactory.Create(e =>
