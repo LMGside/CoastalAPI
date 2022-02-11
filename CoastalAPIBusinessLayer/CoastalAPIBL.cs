@@ -463,7 +463,7 @@ namespace CoastalAPIBusinessLayer
 
                     return bar;
                 }
-                else if(purchasePrice >= asset.Auto_Valuation && automatic)
+                else if(purchasePrice >= asset.Auto_Valuation && automatic && asset.Auto_Sale)
                 {
                     decimal commission = 0;
                     double discount = 0;

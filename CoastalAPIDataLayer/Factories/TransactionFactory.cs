@@ -47,7 +47,7 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
                                             INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
+                                            LEFT JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE Date_Transaction_Requested = @Date", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", date.ToString("yyyy-MM-dd"));
@@ -106,7 +106,7 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
                                             INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
+                                            LEFT JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE [Buyer] = @User", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@User", buyer);
@@ -162,7 +162,7 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
                                             INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
+                                            LEFT JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE [Date_Transaction_Requested] BETWEEN @StartDate AND @EndDate", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
@@ -176,8 +176,8 @@ namespace CoastalAPIDataLayer.Factories
                         Name1 = reader["Name1"].ToString() ?? "",
                         Surname1 = reader["Surname1"].ToString() ?? "",
                         Seller = Convert.ToInt32(reader["Seller"] as int?),
-                        Name2 = reader["Name2"].ToString() ?? "",
-                        Surname2 = reader["Surname2"].ToString() ?? "",
+                        Name2 = reader["Name2"].ToString() ?? "Coastal",
+                        Surname2 = reader["Surname2"].ToString() ?? "Finance",
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
@@ -218,7 +218,7 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
                                             INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
+                                            LEFT JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE [Status] = 2", con);
                 cmd.CommandType = CommandType.Text;
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -231,8 +231,8 @@ namespace CoastalAPIDataLayer.Factories
                         Name1 = reader["Name1"].ToString() ?? "",
                         Surname1 = reader["Surname1"].ToString() ?? "",
                         Seller = Convert.ToInt32(reader["Seller"] as int?),
-                        Name2 = reader["Name2"].ToString() ?? "",
-                        Surname2 = reader["Surname2"].ToString() ?? "",
+                        Name2 = reader["Name2"].ToString() ?? "Coastal",
+                        Surname2 = reader["Surname2"].ToString() ?? "Finance",
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
@@ -273,7 +273,7 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
                                             INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
+                                            LEFT JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE [Status] = 3", con);
                 cmd.CommandType = CommandType.Text;
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -286,8 +286,8 @@ namespace CoastalAPIDataLayer.Factories
                         Name1 = reader["Name1"].ToString() ?? "",
                         Surname1 = reader["Surname1"].ToString() ?? "",
                         Seller = Convert.ToInt32(reader["Seller"] as int?),
-                        Name2 = reader["Name2"].ToString() ?? "",
-                        Surname2 = reader["Surname2"].ToString() ?? "",
+                        Name2 = reader["Name2"].ToString() ?? "Coastal",
+                        Surname2 = reader["Surname2"].ToString() ?? "Finance",
                         Asset = Convert.ToInt32(reader["Asset"] as int?),
                         Amount = Convert.ToDecimal(reader["Amount"]),
                         Auto_Sale = Convert.ToBoolean(reader["Auto_Sale"] as bool?),
@@ -313,11 +313,6 @@ namespace CoastalAPIDataLayer.Factories
                 con.Open();
                 var cmd = new SqlCommand(@"SELECT [Transaction].[ID]
                                                 ,[Buyer]
-	                                            ,a1.[Name] AS 'Name1'
-                                                ,a1.[Surname] AS 'Surname1'
-                                                ,[Seller]
-	                                            ,a2.[Name] AS 'Name2'
-                                                ,a2.[Surname] AS 'Surname2'
                                                 ,[Asset]
                                                 ,[Amount]
                                                 ,[Auto_Sale]
@@ -326,8 +321,6 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Date_Transaction_Approved]
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
-                                            INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE Date_Transaction_Requested = @Date", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", DateTime.Today.ToString("yyyy-MM-dd"));
@@ -347,11 +340,6 @@ namespace CoastalAPIDataLayer.Factories
                 con.Open();
                 var cmd = new SqlCommand(@"SELECT [Transaction].[ID]
                                                 ,[Buyer]
-	                                            ,a1.[Name] AS 'Name1'
-                                                ,a1.[Surname] AS 'Surname1'
-                                                ,[Seller]
-	                                            ,a2.[Name] AS 'Name2'
-                                                ,a2.[Surname] AS 'Surname2'
                                                 ,[Asset]
                                                 ,[Amount]
                                                 ,[Auto_Sale]
@@ -360,8 +348,6 @@ namespace CoastalAPIDataLayer.Factories
                                                 ,[Date_Transaction_Approved]
                                                 ,[Who_Approved]
                                             FROM [dbo].[Transaction]
-                                            INNER JOIN [Customers] a1 ON [Transaction].[Buyer] = a1.[ID]
-                                            INNER JOIN [Customers] a2 ON [Transaction].[Seller] = a2.ID
                                           WHERE Date_Transaction_Requested = @Date AND [Buyer] = @Buyer", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Date", DateTime.Today.ToString("yyyy-MM-dd"));

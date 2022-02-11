@@ -35,32 +35,51 @@ namespace CoastalAPIUnitTesting
         [TestMethod]
         public void TestInsertExistingCustomer()
         {
-            string name = "Coastal Finances";
-            string surname = "Company";
-            DateTime dob = new DateTime(1998, 4, 24);
-            string address = "32 Cornfield Road";
-            string id = "1";
-            string contact = "0312097978";
+            string name = "Sam";
+            string surname = "Smith";
+            DateTime dob = new DateTime(1996, 4, 24);
+            string address = "98 Lambier Street";
+            string id = "9604245094700";
+            string contact = "0836253485";
             RegisterResponse rr = coastalBL.InsertCustomer(name, surname, dob, address, id, contact);
+            Assert.AreEqual(rr.Status, CoastalAPIModels.ResponseStatus.Success);
 
-            Assert.AreEqual(rr.Status, CoastalAPIModels.ResponseStatus.Fail);
+            RegisterResponse rr2 = coastalBL.InsertCustomer(name, surname, dob, address, id, contact);
+            Assert.AreEqual(rr2.Status, CoastalAPIModels.ResponseStatus.Fail);
         }
 
         [TestMethod]
         public void TestFreezingCustomer()
         {
-            string id = "8907149839483";
-            FreezeCustomerResponse fcr = coastalBL.FreezeCustomer(id);
+            string name = "Todd";
+            string surname = "Smith";
+            DateTime dob = new DateTime(1990, 1, 24);
+            string address = "98 Lambier Street";
+            string id = "9001245094700";
+            string contact = "0836253485";
+            RegisterResponse rr = coastalBL.InsertCustomer(name, surname, dob, address, id, contact);
+            Assert.AreEqual(rr.Status, CoastalAPIModels.ResponseStatus.Success);
 
+            FreezeCustomerResponse fcr = coastalBL.FreezeCustomer(id);
             Assert.AreEqual(fcr.Status, CoastalAPIModels.ResponseStatus.Success);
         }
 
         [TestMethod]
         public void TestUnfreezingCustomer()
         {
-            string id = "8907149839483";
-            UnfreezeCustomerResponse ufcr = coastalBL.UnfreezeCustomer(id);
+            string name = "Todd";
+            string surname = "Smith";
+            DateTime dob = new DateTime(1990, 1, 24);
+            string address = "98 Lambier Street";
+            string id = "9001245094700";
+            string contact = "0836253485";
+            RegisterResponse rr = coastalBL.InsertCustomer(name, surname, dob, address, id, contact);
+            Assert.AreEqual(rr.Status, CoastalAPIModels.ResponseStatus.Success);
 
+            FreezeCustomerResponse fcr = coastalBL.FreezeCustomer(id);
+            Assert.AreEqual(fcr.Status, CoastalAPIModels.ResponseStatus.Success);
+
+            UnfreezeCustomerResponse ufcr = coastalBL.UnfreezeCustomer(id);
             Assert.AreEqual(ufcr.Status, CoastalAPIModels.ResponseStatus.Success);
         }
 
@@ -85,9 +104,16 @@ namespace CoastalAPIUnitTesting
         [TestMethod]
         public void TestDeregisterCustomer()
         {
-            string id = "1";
-            DeregisterCustomerResponse drcr = coastalBL.DeregisterCustomer(id);
+            string name = "Daren";
+            string surname = "Smith";
+            DateTime dob = new DateTime(1986, 10, 28);
+            string address = "98 Lambier Street";
+            string id = "8610285094700";
+            string contact = "0836253485";
+            RegisterResponse rr = coastalBL.InsertCustomer(name, surname, dob, address, id, contact);
+            Assert.AreEqual(rr.Status, CoastalAPIModels.ResponseStatus.Success);
 
+            DeregisterCustomerResponse drcr = coastalBL.DeregisterCustomer(id);
             Assert.AreEqual(drcr.Status, CoastalAPIModels.ResponseStatus.Success);
         }
 
