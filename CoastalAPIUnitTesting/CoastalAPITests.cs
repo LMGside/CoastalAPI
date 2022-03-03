@@ -412,7 +412,7 @@ namespace CoastalAPIUnitTesting
             DateTime eDate = new DateTime(2022, 02, 04);
 
             var list = coastalBL.ViewDateRangeTransactions(sDate, eDate).Transactions;
-
+            //Check if empty
             foreach (Transaction x in list)
             {
                 bool checker = x.Date_Transaction_Requested >= sDate && x.Date_Transaction_Requested <= eDate;
